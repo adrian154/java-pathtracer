@@ -64,11 +64,8 @@ public class Renderer {
 			
 			/* Check timing */
 			long elapsed = System.currentTimeMillis() - startTime;
-			System.out.println("------------------- FINISHED IN " + elapsed + "MILLISECONDS");
-			
-			/* 11298 ms when running with 8 threads */
-			/* 21446 ms when running with 1 thread */
-			
+			System.out.println("------------------- FINISHED IN " + elapsed + " MILLISECONDS -------------------");
+
 		}
 	}
 	
