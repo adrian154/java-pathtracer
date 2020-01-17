@@ -1,7 +1,5 @@
 package com.pathtracer;
 
-import com.sun.javafx.scene.traversal.Direction;
-
 public class Sphere implements Shape {
 
 	public Vector center;
