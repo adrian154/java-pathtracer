@@ -46,7 +46,7 @@ public class Pathtracer {
 				incoming = incoming.plus(traceRay(newRay, scene, bounces + 1)).times(newDirection.dot(hit.hit.normal));
 			}
 			
-			incoming = incoming.divBy(4).times(hit.material.diffuseColor);
+			incoming = incoming.divBy(4).times(hit.material.color);
 		
 			return color.plus(incoming);
 		} else {

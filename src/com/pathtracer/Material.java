@@ -2,15 +2,15 @@ package com.pathtracer;
 
 public class Material {
 
-	public Vector diffuseColor;
+	public Vector color;
 	public Vector emissiveColor;
 	
 	public Material() {
 		
 	}
 	
-	public Material(Vector diffuseColor, Vector emissiveColor) {
-		this.diffuseColor = diffuseColor;
+	public Material(Vector color, Vector emissiveColor) {
+		this.color = color;
 		this.emissiveColor = emissiveColor;
 	}
 	
