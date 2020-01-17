@@ -24,14 +24,12 @@ public class Renderer {
 		for(int i = 0 ; i < numCPUCores; i++) {
 			int start = linesPerCore * i;
 			int end = linesPerCore * (i + 1);
-			
-			System.out.println("start: " + start + ", end: " + end);
-			
+	
 			executorService.execute(new Runnable() {
 
 				@Override
 				public void run() {
-					Pathtracer.render(camera,  scene, output, start, end);
+					Pathtracer.renderSection(camera,  scene, output, start, end);
 					Renderer.finishedThreads++;
 					Renderer.checkFinish();
 				}

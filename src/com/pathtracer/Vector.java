@@ -25,6 +25,7 @@ public class Vector {
 		return new Vector(this.x - other.x, this.y - other.y, this.z - other.z);
 	}
 
+	/* SHOULD ONLY BE USED ON COLORS */
 	public Vector times(Vector other) {
 		return new Vector(this.x * other.x, this.y * other.y, this.z * other.z);
 	}
