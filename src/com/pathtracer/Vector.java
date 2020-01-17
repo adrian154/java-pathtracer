@@ -37,6 +37,10 @@ public class Vector {
 		return new Vector(this.x / other.x, this.y / other.y, this.z / other.z);
 	}
 	
+	public Vector divBy(double scalar) {
+		return new Vector(this.x / scalar, this.y / scalar, this.z / scalar);
+	}
+	
 	/* Faster than length. */
 	public double lengthSquared() {
 		return this.x * this.x + this.y * this.y + this.z * this.z;

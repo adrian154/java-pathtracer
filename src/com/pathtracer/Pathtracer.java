@@ -11,6 +11,7 @@ public class Pathtracer {
 		for(WorldObject object : scene.objects) {
 			ObjectHit hit = object.intersect(ray);
 			if(hit.hit.hit && hit.hit.distance < nearestHit.hit.distance) {
+				System.out.println(hit.hit.distance);
 				nearestHit = hit;
 			}
 		}
@@ -45,21 +46,27 @@ public class Pathtracer {
 		
 	}
 	
+	/*
+	 * Render a scene.
+	 */
 	public static void render(Camera camera, Scene scene, Output output) {
 		
 		for(int x = 0; x < output.width; x++) {
 			for(int y = 0; y < output.height; y++) {
 				
-				double worldX = ((double)x - output.width / 2) / output.width;
-				double worldY = ((double)y - output.height / 2) / output.height;
+				double worldX = ((double)x - output.width / 2.0) / output.width;
+				double worldY = ((double)y - output.height / 2.0) / output.height;
 						
 				Vector direction = new Vector(worldX, worldY, 1.0);
-				System.out.println("PRE: " + direction.toString());
-				direction = direction.normalized();
-				System.out.println("POST: " + direction.toString());
 				
 				Ray primaryRay = new Ray(camera.position, direction);
-				Vector color = traceRay(primaryRay, scene, 0);
+				Vector color = new Vector(0.0, 0.0, 0.0);
+				
+				for(int i = 0; i < 20; i++) {
+					color = color.plus(traceRay(primaryRay, scene, 0));
+				}
+				
+				color.divBy(20);
 				
 				output.writePixel(x, y, color);
 				
