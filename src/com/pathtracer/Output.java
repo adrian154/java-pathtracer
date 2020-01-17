@@ -31,7 +31,7 @@ public class Output {
 		
 		/* Create RGB int and write */
 		int rgb = (r << 16) | (g << 8) | (b);
-		image.setRGB(x, y, rgb);	
+		image.setRGB(x, this.height - (y + 1), rgb);	
 	
 	}
 	

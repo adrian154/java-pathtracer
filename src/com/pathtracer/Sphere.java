@@ -43,7 +43,8 @@ public class Sphere implements Shape {
 			return new Hit(false, new Vector(), Double.POSITIVE_INFINITY, new Vector());
 		}
 		
-		double distance = (t1 > Pathtracer.MIN_DISTANCE && t2 < Pathtracer.MIN_DISTANCE) ? t1 : (t2 < Pathtracer.MIN_DISTANCE && t2 > Pathtracer.MIN_DISTANCE) ? t2 : (t1 < t2) ? t1 : t2;
+		double distance = (t1 > Pathtracer.MIN_DISTANCE && t2 < Pathtracer.MIN_DISTANCE) ? t1 : ((t1 < Pathtracer.MIN_DISTANCE && t2 > Pathtracer.MIN_DISTANCE) ? t2 : ((t1 < t2) ? t1 : t2));
+		
 		Vector point = ray.point(distance);
 		Vector normal = point.minus(this.center).normalized();
 		

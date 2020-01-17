@@ -1,4 +1,4 @@
-package com.pathtracer;
+ package com.pathtracer;
 
 public class Pathtracer {
 
@@ -11,7 +11,6 @@ public class Pathtracer {
 		for(WorldObject object : scene.objects) {
 			ObjectHit hit = object.intersect(ray);
 			if(hit.hit.hit && hit.hit.distance < nearestHit.hit.distance) {
-				System.out.println(hit.hit.distance);
 				nearestHit = hit;
 			}
 		}
@@ -26,7 +25,7 @@ public class Pathtracer {
 	 */
 	public static Vector traceRay(Ray ray, Scene scene, int bounces) {
 		
-		if(bounces == 2)
+		if(bounces > 2)
 			return new Vector(0.0, 0.0, 0.0);
 		
 		ObjectHit hit = getHit(ray, scene);
@@ -36,10 +35,17 @@ public class Pathtracer {
 		if(hit.hit.hit) {
 			color = color.plus(hit.material.emissiveColor);
 			
-			Vector newDirection = Material.getDiffuseVector(hit.hit.normal);
-			Ray newRay = new Ray(hit.hit.hitPoint, newDirection);
+			Vector incoming = new Vector(0.0, 0.0, 0.0);
 			
-			return color.plus(traceRay(newRay, scene, bounces + 1));
+			for(int i = 0; i < 16; i++) {
+				Vector newDirection = Material.getDiffuseVector(hit.hit.normal);
+				Ray newRay = new Ray(hit.hit.hitPoint, newDirection);
+				incoming = incoming.plus(traceRay(newRay, scene, bounces + 1)).times(newDirection.dot(hit.hit.normal));
+			}
+			
+			incoming = incoming.divBy(16);
+			
+			return color.plus(incoming);
 		} else {
 			return color;
 		}
@@ -62,7 +68,7 @@ public class Pathtracer {
 				Ray primaryRay = new Ray(camera.position, direction);
 				Vector color = new Vector(0.0, 0.0, 0.0);
 				
-				for(int i = 0; i < 20; i++) {
+				for(int i = 0; i < 10; i++) {
 					color = color.plus(traceRay(primaryRay, scene, 0));
 				}
 				
@@ -71,6 +77,8 @@ public class Pathtracer {
 				output.writePixel(x, y, color);
 				
 			}
+			
+			System.out.println("Now on line " + x);
 		}
 		
 	}

@@ -80,20 +80,14 @@ public class Vector {
 		return new String("(" + this.x + ", " + this.y + ", " + this.z + ")");
 	}
 	
-	public static Vector randomInSphere() {
+	public static Vector randomInHemisphere() {
 		double theta = 2 * Math.PI * Math.random();
 		double phi = Math.acos(1 - 2 * Math.random());
 		return new Vector(
-			Math.sin(phi) * Math.acos(theta),
-			Math.cos(phi),
+			Math.sin(phi) * Math.cos(theta),
+			Math.abs(Math.cos(phi)),
 			Math.sin(theta) * Math.sin(phi)
 		);
-	}
-	
-	public static Vector randomInHemisphere() {
-		Vector randomVector = randomInSphere();
-		randomVector.y = Math.abs(randomVector.y);
-		return randomVector;
 	}
 	
 }
