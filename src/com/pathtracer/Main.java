@@ -1,8 +1,12 @@
 package com.pathtracer;
 
+import java.io.File;
+
 public class Main {
 
 	public static void main(String[] args) {
+		
+		Mesh testMesh = new Mesh(new File("UtahTeapot.obj"));
 		
 		Output output = new Output(256, 256);
 		
@@ -15,7 +19,7 @@ public class Main {
 		scene.objects.add(new WorldObject(new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, -1.3, 0.0)), new Material(new Vector(1.0, 1.0, 1.0), new Vector(0.0, 0.0, 0.0))));
 		scene.objects.add(new WorldObject(new Plane(new Vector(0.0, -1.0, 0.0), new Vector(0.0, 1.3, 0.0)), new Material(new Vector(1.0, 1.0, 1.0), new Vector(0.0, 0.0, 0.0))));
 		scene.objects.add(new WorldObject(new Plane(new Vector(0.0, 0.0, -1.0), new Vector(0.0, 0.0, 5.0)), new Material(new Vector(1.0, 0.0, 0.0), new Vector(0.0, 0.0, 0.0))));
-		Renderer.render(camera, scene, output);
+		//Renderer.render(camera, scene, output);
 		
 		//output.writeToFile("output.png");
 		
