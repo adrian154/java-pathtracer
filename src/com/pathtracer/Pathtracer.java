@@ -1,5 +1,8 @@
  package com.pathtracer;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class Pathtracer {
 
 	public static double MIN_DISTANCE = 0.001;
@@ -37,13 +40,13 @@ public class Pathtracer {
 			
 			Vector incoming = new Vector(0.0, 0.0, 0.0);
 			
-			for(int i = 0; i < 16; i++) {
+			for(int i = 0; i < 4; i++) {
 				Vector newDirection = Material.getDiffuseVector(hit.hit.normal);
 				Ray newRay = new Ray(hit.hit.hitPoint, newDirection);
 				incoming = incoming.plus(traceRay(newRay, scene, bounces + 1)).times(newDirection.dot(hit.hit.normal));
 			}
 			
-			incoming = incoming.divBy(16);
+			incoming = incoming.divBy(4);
 			
 			return color.plus(incoming);
 		} else {
@@ -55,9 +58,9 @@ public class Pathtracer {
 	/*
 	 * Render a scene.
 	 */
-	public static void render(Camera camera, Scene scene, Output output) {
+	public static void render(Camera camera, Scene scene, Output output, int start, int end) {
 		
-		for(int x = 0; x < output.width; x++) {
+		for(int x = start; x < end; x++) {
 			for(int y = 0; y < output.height; y++) {
 				
 				double worldX = ((double)x - output.width / 2.0) / output.width;
@@ -68,11 +71,11 @@ public class Pathtracer {
 				Ray primaryRay = new Ray(camera.position, direction);
 				Vector color = new Vector(0.0, 0.0, 0.0);
 				
-				for(int i = 0; i < 10; i++) {
+				for(int i = 0; i < 4; i++) {
 					color = color.plus(traceRay(primaryRay, scene, 0));
 				}
 				
-				color.divBy(20);
+				color.divBy(4);
 				
 				output.writePixel(x, y, color);
 				
@@ -82,5 +85,5 @@ public class Pathtracer {
 		}
 		
 	}
-	
+		
 }

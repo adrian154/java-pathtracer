@@ -29,4 +29,14 @@ public class Material {
 		
 	}
 	
+	public static Vector getReflectionVector(Vector normal, Vector incident, double distortion) {
+		
+		Vector distort = new Vector(0.0, 0.0, 0.0);
+		if(distortion != 0) {
+			
+		}
+		return distort;
+		
+	}
+	
 }

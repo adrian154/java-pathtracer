@@ -11,11 +11,14 @@ public class Main {
 		Scene scene = new Scene();
 		scene.objects.add(new WorldObject(new Sphere(new Vector(0.0, -0.1, 3.0), 0.3), new Material(new Vector(1.0, 1.0, 1.0), new Vector(0.0, 0.0, 0.0))));
 		scene.objects.add(new WorldObject(new Sphere(new Vector(0.0, 0.5, 3.0), 0.2), new Material(new Vector(1.0, 1.0, 1.0), new Vector(3000.0, 3000.0, 3000.0))));
-		scene.objects.add(new WorldObject(new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, -1.0, 0.0)), new Material(new Vector(1.0, 0.0, 0.0), new Vector(0.0, 0.0, 0.0))));
-		Pathtracer.render(camera, scene, output);
 		
-		output.writeToFile("output.png");
-	
+		scene.objects.add(new WorldObject(new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, -1.0, 0.0)), new Material(new Vector(1.0, 1.0, 1.0), new Vector(0.0, 0.0, 0.0))));
+		scene.objects.add(new WorldObject(new Plane(new Vector(0.0, -1.0, 0.0), new Vector(0.0, 1.0, 0.0)), new Material(new Vector(1.0, 1.0, 1.0), new Vector(30.0, 30.0, 30.0))));
+		scene.objects.add(new WorldObject(new Plane(new Vector(0.0, 0.0, -1.0), new Vector(0.0, 0.0, 5.0)), new Material(new Vector(1.0, 1.0, 1.0), new Vector(0.0, 0.0, 0.0))));
+		Renderer.render(camera, scene, output);
+		
+		//output.writeToFile("output.png");
+		
 	}
 	
 }
