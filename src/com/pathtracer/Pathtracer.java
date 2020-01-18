@@ -7,8 +7,8 @@ public class Pathtracer {
 
 	public static double MIN_DISTANCE = 0.001;
 	
-	public static int NUM_PRIMARY_RAYS = 4;
-	public static int NUM_SECONDARY_RAYS = 1;
+	public static int NUM_PRIMARY_RAYS = 8;
+	public static int NUM_SECONDARY_RAYS = 2;
 	
 	public static ObjectHit getHit(Ray ray, Scene scene) {
 		
@@ -47,7 +47,7 @@ public class Pathtracer {
 				if(Math.random() < hit.material.diffuseProb) {
 					newDirection = Material.getDiffuseVector(hit.hit.normal);
 				} else {
-					newDirection = Material.getReflectionVector(hit.hit.normal, ray.direction);
+					newDirection = Material.getReflectionVector(hit.hit.normal, ray.direction, hit.material.glossiness);
 				}
 				
 				Ray newRay = new Ray(hit.hit.hitPoint, newDirection);
@@ -84,6 +84,8 @@ public class Pathtracer {
 		
 		for(int x = start; x < end; x++) {
 			for(int y = 0; y < output.height; y++) {
+				
+				output.writePixel(x, y, new Vector(0.0, 255.0, 0.0));
 				
 				double worldX = ((double)x - output.width / 2.0) / output.width;
 				double worldY = ((double)y - output.height / 2.0) / output.height;

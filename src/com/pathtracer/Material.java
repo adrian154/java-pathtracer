@@ -5,15 +5,17 @@ public class Material {
 	public Vector color;
 	public Vector emissiveColor;
 	public double diffuseProb;
-
+	public double glossiness;
+	
 	public Material() {
 		
 	}
 	
-	public Material(Vector color, Vector emissiveColor, double diffuseProb) {
+	public Material(Vector color, Vector emissiveColor, double diffuseProb, double glossiness) {
 		this.color = color;
 		this.emissiveColor = emissiveColor;
 		this.diffuseProb = diffuseProb;
+		this.glossiness = glossiness;
 	}
 	
 	public static Vector getDiffuseVector(Vector normal) {
@@ -31,8 +33,14 @@ public class Material {
 		
 	}
 	
-	public static Vector getReflectionVector(Vector normal, Vector incident) {
-		return incident.minus(normal.times(2 * incident.dot(normal)));
+	public static Vector getReflectionVector(Vector normal, Vector incident, double glossiness) {
+		Vector reflect = incident.minus(normal.times(2 * incident.dot(normal)));
+		
+		if(glossiness > 0.0) {
+			return reflect.plus(Material.getDiffuseVector(reflect).times(glossiness)).normalized();
+		} else {
+			return reflect;
+		}
 	}
 	
 }

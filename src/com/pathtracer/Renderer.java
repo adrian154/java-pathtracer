@@ -21,7 +21,8 @@ public class Renderer {
 		startTime = System.currentTimeMillis();
 		
 		/* Set up renderer fields */
-		Renderer.numThreads = Runtime.getRuntime().availableProcessors();
+		//Renderer.numThreads = Runtime.getRuntime().availableProcessors();
+		Renderer.numThreads = 1;
 		Renderer.finishedThreads = 0;
 		Renderer.output = output;
 		
