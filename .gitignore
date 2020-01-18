@@ -1,12 +1,13 @@
+# Hidden files
 .*
 
-.settings/*
-.bin/*
-
+# Other files
 *.class
 *.png
+*.psd
 *.jar
+*.txt
 
+# Directories
 /bin/
-
-/do/
+/digitalocean/
