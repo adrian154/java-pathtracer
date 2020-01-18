@@ -10,6 +10,7 @@ public class LivePreviewFrame extends JFrame {
 		this.add(new LivePreviewPanel());
 		this.setResizable(false);
 		this.pack();
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
 }

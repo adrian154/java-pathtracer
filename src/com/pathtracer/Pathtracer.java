@@ -7,8 +7,8 @@ public class Pathtracer {
 
 	public static double MIN_DISTANCE = 0.001;
 	
-	public static int NUM_PRIMARY_RAYS = 8;
-	public static int NUM_SECONDARY_RAYS = 2;
+	public static int NUM_PRIMARY_RAYS = 6;
+	public static int NUM_SECONDARY_RAYS = 3;
 	
 	public static ObjectHit getHit(Ray ray, Scene scene) {
 		
@@ -31,7 +31,7 @@ public class Pathtracer {
 	 */
 	public static Vector traceRay(Ray ray, Scene scene, int bounces) {
 		
-		if(bounces > 3)
+		if(bounces > 2)
 			return new Vector(0.0, 0.0, 0.0);
 		
 		ObjectHit hit = getHit(ray, scene);
@@ -87,10 +87,10 @@ public class Pathtracer {
 				
 				output.writePixel(x, y, new Vector(0.0, 255.0, 0.0));
 				
-				double worldX = ((double)x - output.width / 2.0) / output.width;
-				double worldY = ((double)y - output.height / 2.0) / output.height;
+				double worldX = ((double)x - output.width / 2.0) / output.width * camera.sensorSize;
+				double worldY = ((double)y - output.height / 2.0) / output.height * camera.sensorSize;
 						
-				Vector direction = new Vector(worldX, worldY, 1.0);
+				Vector direction = new Vector(worldX, worldY, camera.focalLength);
 				
 				Ray primaryRay = new Ray(camera.position, direction);
 				Vector color = new Vector(0.0, 0.0, 0.0);

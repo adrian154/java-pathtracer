@@ -21,8 +21,7 @@ public class Renderer {
 		startTime = System.currentTimeMillis();
 		
 		/* Set up renderer fields */
-		//Renderer.numThreads = Runtime.getRuntime().availableProcessors();
-		Renderer.numThreads = 1;
+		Renderer.numThreads = Runtime.getRuntime().availableProcessors();
 		Renderer.finishedThreads = 0;
 		Renderer.output = output;
 		
@@ -69,8 +68,7 @@ public class Renderer {
 			System.out.println("------------------- FINISHED IN " + elapsed + " MILLISECONDS -------------------");
 			
 			Renderer.executorService.shutdown();
-			System.exit(0);
-
+			
 		}
 	}
 	
