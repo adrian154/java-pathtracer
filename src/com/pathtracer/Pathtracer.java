@@ -7,6 +7,9 @@ public class Pathtracer {
 
 	public static double MIN_DISTANCE = 0.001;
 	
+	public static int NUM_PRIMARY_RAYS = 4;
+	public static int NUM_SECONDARY_RAYS = 1;
+	
 	public static ObjectHit getHit(Ray ray, Scene scene) {
 		
 		ObjectHit nearestHit = new ObjectHit(new Hit(false, new Vector(), Double.POSITIVE_INFINITY, new Vector()), new Material());
@@ -33,24 +36,36 @@ public class Pathtracer {
 		
 		ObjectHit hit = getHit(ray, scene);
 		
-		Vector color = new Vector(0.0, 0.0, 0.0);
-		
 		if(hit.hit.hit) {
-			color = color.plus(hit.material.emissiveColor);
+			Vector color = hit.material.emissiveColor;
 			
 			Vector incoming = new Vector(0.0, 0.0, 0.0);
 			
-			for(int i = 0; i < 4; i++) {
+			for(int i = 0; i < NUM_SECONDARY_RAYS; i++) {
 				Vector newDirection = Material.getDiffuseVector(hit.hit.normal);
 				Ray newRay = new Ray(hit.hit.hitPoint, newDirection);
 				incoming = incoming.plus(traceRay(newRay, scene, bounces + 1)).times(newDirection.dot(hit.hit.normal));
 			}
 			
-			incoming = incoming.divBy(4).times(hit.material.color);
+			incoming = incoming.divBy(NUM_SECONDARY_RAYS).times(hit.material.color);
 		
 			return color.plus(incoming);
 		} else {
-			return color;
+			return new Vector(0.0, 0.0, 0.0);
+		}
+		
+	}
+	
+	/*
+	 * Test function. Traces ray
+	 */
+	public static Vector traceRayNorm(Ray ray, Scene scene, int bounces) {
+		
+		ObjectHit hit = getHit(ray, scene);
+		if(hit.hit.hit) {
+			return (new Vector(0.5, 0.5, 0.5).plus(hit.hit.normal.normalized().times(0.5))).times(100);
+		} else {
+			return new Vector(0.0, 0.0, 0.0);
 		}
 		
 	}
@@ -71,11 +86,11 @@ public class Pathtracer {
 				Ray primaryRay = new Ray(camera.position, direction);
 				Vector color = new Vector(0.0, 0.0, 0.0);
 				
-				for(int i = 0; i < 4; i++) {
+				for(int i = 0; i < NUM_PRIMARY_RAYS; i++) {
 					color = color.plus(traceRay(primaryRay, scene, 0));
 				}
 				
-				color.divBy(4);
+				color.divBy(NUM_PRIMARY_RAYS);
 				
 				output.writePixel(x, y, color);
 				

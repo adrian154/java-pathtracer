@@ -68,12 +68,47 @@ public class Mesh implements Shape {
 		
 	}
 	
+	/* Util functions for checking if a point is in a triangle */
+	public boolean sameSide(Vector p1, Vector p2, Vector a, Vector b) {
+		Vector cp1 = b.minus(a).cross(p1.minus(a));
+		Vector cp2 = b.minus(a).cross(p2.minus(a));
+		if(cp1.dot(cp2) >= 0)
+			return true;
+		else
+			return false;
+	}
+	
 	@Override
 	public Hit intersect(Ray ray) {
+
+		Hit nearestHit = new Hit(false, new Vector(), Double.POSITIVE_INFINITY, new Vector());
 		
+		/* Loop through triangles */
+		for(int i = 0; i < triangles.length; i++) {
+			Vector p1 = vertexes[triangles[i][0] - 1];
+			Vector p2 = vertexes[triangles[i][1] - 1];
+			Vector p3 = vertexes[triangles[i][2] - 1];
+			
+			Vector normal = p2.minus(p1).cross(p3.minus(p2)).normalized();
+			Plane plane = new Plane(normal, p1);
+			Hit hit = plane.intersect(ray);
+			
+			/* Check if point is inside triangle */
+			if(hit.hit) {
+				if(sameSide(hit.hitPoint, p1, p2, p3) && sameSide(hit.hitPoint, p2, p1, p3) && sameSide(hit.hitPoint, p3, p1, p2)) {
+					if(hit.distance < nearestHit.distance) {
+						nearestHit = hit;
+					}
+				}
+			}
+			
+		}
 		
+		if(nearestHit.hit) 
+			return nearestHit;
 		
-		return null;
+		return new Hit(false, new Vector(), Double.POSITIVE_INFINITY, new Vector());
+		
 	}
 
 }

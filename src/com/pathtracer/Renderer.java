@@ -8,6 +8,7 @@ public class Renderer {
 	public static int numThreads;
 	public static int finishedThreads;
 	public static Output output;
+	public static ExecutorService executorService;
 	
 	public static long startTime;
 
@@ -24,7 +25,7 @@ public class Renderer {
 		Renderer.finishedThreads = 0;
 		Renderer.output = output;
 		
-		ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+		executorService = Executors.newFixedThreadPool(numThreads);
 		
 		int linesPerCore = output.width / numThreads;
 		
@@ -65,6 +66,9 @@ public class Renderer {
 			/* Check timing */
 			long elapsed = System.currentTimeMillis() - startTime;
 			System.out.println("------------------- FINISHED IN " + elapsed + " MILLISECONDS -------------------");
+			
+			Renderer.executorService.shutdown();
+			System.exit(0);
 
 		}
 	}
