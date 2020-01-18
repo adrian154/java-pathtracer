@@ -14,13 +14,13 @@ public class Plane implements Shape {
 		
 		double denom = ray.direction.dot(this.normal);
 		if(denom == 0) {
-			return new Hit(false, new Vector(), Double.POSITIVE_INFINITY, new Vector());
+			return Hit.MISS;
 		}
 		
 		double distance = this.point.minus(ray.origin).dot(this.normal) / denom;
 		
 		if(distance < Pathtracer.MIN_DISTANCE) {
-			return new Hit(false, new Vector(), Double.POSITIVE_INFINITY, new Vector());
+			return Hit.MISS;
 		}
 		
 		Vector point = ray.point(distance);

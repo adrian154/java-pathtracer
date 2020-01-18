@@ -29,7 +29,7 @@ public class Sphere implements Shape {
 		
 		/* No solution. */
 		if(discrim < 0) {
-			return new Hit(false, new Vector(), Double.POSITIVE_INFINITY, new Vector());
+			return Hit.MISS;
 		}
 		
 		/* Solve quadratic */
@@ -38,7 +38,7 @@ public class Sphere implements Shape {
 		
 		/* Exclude values that are negative (behind camera) */
 		if(t1 < Pathtracer.MIN_DISTANCE && t2 < Pathtracer.MIN_DISTANCE) {
-			return new Hit(false, new Vector(), Double.POSITIVE_INFINITY, new Vector());
+			return Hit.MISS;
 		}
 		
 		double distance = (t1 > Pathtracer.MIN_DISTANCE && t2 < Pathtracer.MIN_DISTANCE) ? t1 : ((t1 < Pathtracer.MIN_DISTANCE && t2 > Pathtracer.MIN_DISTANCE) ? t2 : ((t1 < t2) ? t1 : t2));

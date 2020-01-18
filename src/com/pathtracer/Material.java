@@ -4,14 +4,16 @@ public class Material {
 
 	public Vector color;
 	public Vector emissiveColor;
-	
+	public double diffuseProb;
+
 	public Material() {
 		
 	}
 	
-	public Material(Vector color, Vector emissiveColor) {
+	public Material(Vector color, Vector emissiveColor, double diffuseProb) {
 		this.color = color;
 		this.emissiveColor = emissiveColor;
+		this.diffuseProb = diffuseProb;
 	}
 	
 	public static Vector getDiffuseVector(Vector normal) {
@@ -29,14 +31,8 @@ public class Material {
 		
 	}
 	
-	public static Vector getReflectionVector(Vector normal, Vector incident, double distortion) {
-		
-		Vector distort = new Vector(0.0, 0.0, 0.0);
-		if(distortion != 0) {
-			
-		}
-		return distort;
-		
+	public static Vector getReflectionVector(Vector normal, Vector incident) {
+		return incident.minus(normal.times(2 * incident.dot(normal)));
 	}
 	
 }

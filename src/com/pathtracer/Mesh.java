@@ -9,8 +9,9 @@ public class Mesh implements Shape {
 
 	public Vector[] vertexes;
 	public int[][] triangles;
+	public BoundingBox boundingBox;
 	
-	public Mesh(File file) {
+	public Mesh(File file, double scale, Vector offset) {
 		
 		ArrayList<Vector> vertexes = new ArrayList<Vector>();
 		ArrayList<int[]> triangles = new ArrayList<int[]>();
@@ -32,6 +33,9 @@ public class Mesh implements Shape {
 				/* Split line */
 				String[] parts = line.split(" ");
 
+				if(!parts[0].equals("v") && !parts[0].equals("f"))
+					continue;
+				
 				/* Validate */
 				if(parts.length != 4) {
 					System.out.println("error in \"" + file.getName() + "\" at line " + lineNum + ": wrong number of parameters (expected 4)");
@@ -39,9 +43,9 @@ public class Mesh implements Shape {
 				}
 				
 				if(parts[0].equals("v")) {
-					double d1 = Double.parseDouble(parts[1]);
-					double d2 = Double.parseDouble(parts[2]);
-					double d3 = Double.parseDouble(parts[3]);
+					double d1 = Double.parseDouble(parts[1]) * scale + offset.x;
+					double d2 = Double.parseDouble(parts[2]) * scale + offset.y;
+					double d3 = Double.parseDouble(parts[3]) * scale + offset.z;
 					vertexes.add(new Vector(d1, d2, d3));
 				} else {
 					int i1 = Integer.parseInt(parts[1]);
@@ -66,6 +70,40 @@ public class Mesh implements Shape {
 		this.vertexes = vertexes.toArray(new Vector[vertexes.size()]);
 		this.triangles = triangles.toArray(new int[triangles.size()][3]);
 		
+		this.computeBoundingBox();
+		
+	}
+	
+	/*
+	 * Compute the bounding box occupied by the mesh.
+	 */
+	public void computeBoundingBox() {
+		
+		double minX = Double.POSITIVE_INFINITY;
+		double minY = Double.POSITIVE_INFINITY;
+		double minZ = Double.POSITIVE_INFINITY;
+		
+		double maxX = Double.NEGATIVE_INFINITY;
+		double maxY = Double.NEGATIVE_INFINITY;
+		double maxZ = Double.NEGATIVE_INFINITY;
+		
+		for(int i = 0; i < vertexes.length; i++) {
+			Vector vertex = vertexes[i];
+			
+			if(vertex.x < minX) minX = vertex.x;
+			if(vertex.y < minY) minY = vertex.y;
+			if(vertex.z < minZ) minZ = vertex.z;
+			
+			if(vertex.x > maxX) maxX = vertex.x;
+			if(vertex.y > maxY) maxY = vertex.y;
+			if(vertex.z > maxZ) maxZ = vertex.z;
+		}
+		
+		Vector min = new Vector(minX, minY, minZ);
+		Vector max = new Vector(maxX, maxY, maxZ);
+
+		this.boundingBox = new BoundingBox(min, max);
+		
 	}
 	
 	/* Util functions for checking if a point is in a triangle */
@@ -78,10 +116,13 @@ public class Mesh implements Shape {
 			return false;
 	}
 	
-	@Override
 	public Hit intersect(Ray ray) {
-
-		Hit nearestHit = new Hit(false, new Vector(), Double.POSITIVE_INFINITY, new Vector());
+		
+		if(!this.boundingBox.doesIntersect(ray)) {
+			return Hit.MISS;
+		}
+		
+		Hit nearestHit = Hit.MISS;
 		
 		/* Loop through triangles */
 		for(int i = 0; i < triangles.length; i++) {
@@ -107,8 +148,9 @@ public class Mesh implements Shape {
 		if(nearestHit.hit) 
 			return nearestHit;
 		
-		return new Hit(false, new Vector(), Double.POSITIVE_INFINITY, new Vector());
+		return Hit.MISS;
 		
 	}
+	
 
 }

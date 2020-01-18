@@ -12,7 +12,7 @@ public class Pathtracer {
 	
 	public static ObjectHit getHit(Ray ray, Scene scene) {
 		
-		ObjectHit nearestHit = new ObjectHit(new Hit(false, new Vector(), Double.POSITIVE_INFINITY, new Vector()), new Material());
+		ObjectHit nearestHit = new ObjectHit(Hit.MISS, new Material());
 		
 		for(WorldObject object : scene.objects) {
 			ObjectHit hit = object.intersect(ray);
@@ -31,7 +31,7 @@ public class Pathtracer {
 	 */
 	public static Vector traceRay(Ray ray, Scene scene, int bounces) {
 		
-		if(bounces > 2)
+		if(bounces > 3)
 			return new Vector(0.0, 0.0, 0.0);
 		
 		ObjectHit hit = getHit(ray, scene);
@@ -42,7 +42,14 @@ public class Pathtracer {
 			Vector incoming = new Vector(0.0, 0.0, 0.0);
 			
 			for(int i = 0; i < NUM_SECONDARY_RAYS; i++) {
-				Vector newDirection = Material.getDiffuseVector(hit.hit.normal);
+				Vector newDirection;
+				
+				if(Math.random() < hit.material.diffuseProb) {
+					newDirection = Material.getDiffuseVector(hit.hit.normal);
+				} else {
+					newDirection = Material.getReflectionVector(hit.hit.normal, ray.direction);
+				}
+				
 				Ray newRay = new Ray(hit.hit.hitPoint, newDirection);
 				incoming = incoming.plus(traceRay(newRay, scene, bounces + 1)).times(newDirection.dot(hit.hit.normal));
 			}

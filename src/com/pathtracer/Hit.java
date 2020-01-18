@@ -7,6 +7,8 @@ public class Hit {
 	public double distance;
 	public Vector normal;
 	
+	public static Hit MISS = new Hit(false, new Vector(), Double.POSITIVE_INFINITY, new Vector());
+	
 	public Hit(boolean hit, Vector hitPoint, double distance, Vector normal) {
 		this.hit = hit;
 		this.hitPoint = hitPoint;
