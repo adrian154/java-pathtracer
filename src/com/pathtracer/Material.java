@@ -1,23 +1,29 @@
 package com.pathtracer;
 
+/*
+ * Material information.
+ */
 public class Material {
 
 	public Vector color;
 	public Vector emissiveColor;
-	public double diffuseProb;
+	public double diffuseness;
 	public double glossiness;
 	
 	public Material() {
 		
 	}
 	
-	public Material(Vector color, Vector emissiveColor, double diffuseProb, double glossiness) {
+	public Material(Vector color, Vector emissiveColor, double diffuseness, double glossiness) {
 		this.color = color;
 		this.emissiveColor = emissiveColor;
-		this.diffuseProb = diffuseProb;
+		this.diffuseness = diffuseness;
 		this.glossiness = glossiness;
 	}
 	
+	/*
+	 * Static method. Get random diffuse vector.
+	 */
 	public static Vector getDiffuseVector(Vector normal) {
 		
 		/* Get random vector in hemisphere */
@@ -33,6 +39,9 @@ public class Material {
 		
 	}
 	
+	/*
+	 * Static method. Get random reflection vector.
+	 */
 	public static Vector getReflectionVector(Vector normal, Vector incident, double glossiness) {
 		Vector reflect = incident.minus(normal.times(2 * incident.dot(normal)));
 		

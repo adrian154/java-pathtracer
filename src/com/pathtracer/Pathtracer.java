@@ -47,7 +47,7 @@ public class Pathtracer {
 			for(int i = 0; i < NUM_SECONDARY_RAYS; i++) {
 				Vector newDirection;
 				
-				if(Math.random() < hit.material.diffuseProb) {
+				if(Math.random() < hit.material.diffuseness) {
 					newDirection = Material.getDiffuseVector(hit.hit.normal);
 				} else {
 					newDirection = Material.getReflectionVector(hit.hit.normal, ray.direction, hit.material.glossiness);

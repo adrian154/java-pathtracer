@@ -1,5 +1,8 @@
 package com.pathtracer;
 
+/*
+ * Camera and camera information.
+ */
 public class Camera {
 
 	public double sensorSize;

@@ -6,14 +6,24 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/*
+ * Triangle mesh.
+ */
 public class Mesh implements Shape {
 
+	/* Vertexes in the mesh. */
 	public Vector[] vertexes;
+	
+	/* Triangles; contains indexes of vertexes. */
 	public int[][] triangles;
+	
+	/* Octree, for optimization. */
 	public OctreeBoundingBox octree;
 	
+	/* Static field - octree level, for mesh construction. */
 	public static int OCTREE_LEVEL = 2;
 	
+	/* Constructor -  load mesh. */
 	public Mesh(File file, double scale, Vector offset) {
 		
 		ArrayList<Vector> vertexes = new ArrayList<Vector>();
@@ -30,7 +40,7 @@ public class Mesh implements Shape {
 				
 				lineNum++;
 				
-				/* Avoid newlines */
+				/* Avoid empty lines. */
 				if(line.length() == 0) {
 					continue;
 				}
@@ -38,25 +48,30 @@ public class Mesh implements Shape {
 				/* Split line */
 				String[] parts = line.split("\\s+");
 
+				/* Ignore unsupported lines. */
 				if(!parts[0].equals("v") && !parts[0].equals("f"))
 					continue;
 				
-				/* Validate */
+				/* Validate the line. */
 				if(parts[0].equals("v") && parts.length != 4) {
 					System.out.println("error in \"" + file.getName() + "\" at line " + lineNum + ": wrong number of parameters for vertex (expected 4 but got " + parts.length + ")");
-					return;
+					System.exit(1);
 				} else if(parts[0].equals("f") && parts.length < 4) {
 					System.out.println("error in \"" + file.getName() + "\" at line " + lineNum + ": too few parameters for face (expected at least 4 but got " + parts.length + ")");
-					return;
+					System.exit(1);
 				}
 				
 				if(parts[0].equals("v")) {
+					
+					/* Load vertex. */
 					double d1 = Double.parseDouble(parts[1]) * scale + offset.x;
 					double d2 = Double.parseDouble(parts[2]) * scale + offset.y;
 					double d3 = Double.parseDouble(parts[3]) * scale + offset.z;
 					vertexes.add(new Vector(d1, d2, d3));
+					
 				} else {
 					
+					/* Load polygon */
 					int indexes[] = new int[parts.length - 1];
 					for(int vert = 0; vert < indexes.length; vert++) {
 						int strindex = parts[vert + 1].indexOf('/');
@@ -77,12 +92,14 @@ public class Mesh implements Shape {
 			
 		} catch(Exception exception) {
 			exception.printStackTrace();
+			System.exit(1);
 		}
 		
 		/* Convert arraylists to array */
 		this.vertexes = vertexes.toArray(new Vector[vertexes.size()]);
 		this.triangles = triangles.toArray(new int[triangles.size()][3]);
 		
+		/* Compute octree for the mesh */
 		this.computeOctree();
 		
 	}
@@ -142,6 +159,7 @@ public class Mesh implements Shape {
 		Vector min = new Vector(minX, minY, minZ);
 		Vector max = new Vector(maxX, maxY, maxZ);
 
+		/* Split the bounding box into sub-boxes. */
 		this.octree = new OctreeBoundingBox(min, max);
 		splitBox(this.octree, 0);
 		
@@ -152,6 +170,7 @@ public class Mesh implements Shape {
 	 */
 	public void splitBox(OctreeBoundingBox box, int level) {
 
+		/* Bottom left and top right corners */
 		Vector min = box.min;
 		Vector max = box.max;
 		
@@ -175,6 +194,7 @@ public class Mesh implements Shape {
 		OctreeBoundingBox filledBoxes[] = new OctreeBoundingBox[8];
 		int numFilledBoxes = 0;
 		
+		/* Loop through sub-boxes. */
 		for(int i = 0; i < 8; i++) {
 			
 			OctreeBoundingBox subbox = boxes[i];
@@ -201,13 +221,12 @@ public class Mesh implements Shape {
 			
 		}
 
-		/* Attach subboxes. */
+		/* Attach filled subboxes. */
 		box.subBoxes = Arrays.copyOfRange(filledBoxes, 0, numFilledBoxes);
 		
 		/* Recurse if level is not too high */
 		if(level < Mesh.OCTREE_LEVEL) {
 			
-			/* Recurse. */
 			for(int i = 0; i < box.subBoxes.length; i++) {
 				splitBox(box.subBoxes[i], level + 1);
 			}
@@ -216,7 +235,9 @@ public class Mesh implements Shape {
 		
 	}
 	
-	/* Util functions for checking if a point is in a triangle */
+	/*
+	 * Util functions for checking if a point is in a triangle
+	 */
 	public boolean sameSide(Vector p1, Vector p2, Vector a, Vector b) {
 		Vector cp1 = b.minus(a).cross(p1.minus(a));
 		Vector cp2 = b.minus(a).cross(p2.minus(a));
@@ -226,20 +247,31 @@ public class Mesh implements Shape {
 			return false;
 	}
 	
+	/*
+	 * Check ray-mesh intersection.
+	 */
 	public Hit intersect(Ray ray) {
+		
+		/* Walk octree and */
 		return intersect(ray, octree);
 	}
 	
+	/*
+	 * Recursive; check if ray inersects with octree.
+	 */
 	public Hit intersect(Ray ray, OctreeBoundingBox box) {
 		
+		/* Miss: don't recurse. */
 		if(!box.doesIntersect(ray)) {
 			return Hit.MISS;
 		}
 		
+		/* Terminal box: iterate through triangles. */
 		if(box.isTerminal) {
 			return intersect(ray, box.containedTriangles);
 		}
 		
+		/* Otherwise: recurse, find nearest box. */
 		Hit nearestHit = Hit.MISS;
 		for(int i = 0; i < box.subBoxes.length; i++) {
 			Hit hit = intersect(ray, box.subBoxes[i]);
@@ -255,6 +287,9 @@ public class Mesh implements Shape {
 		
 	}
 	
+	/*
+	 * Ray intersection with list of triangles.
+	 */
 	public Hit intersect(Ray ray, int triangles[]) {
 
 		Hit nearestHit = Hit.MISS;
@@ -287,36 +322,4 @@ public class Mesh implements Shape {
 		
 	}
 	
-	/*
-	public Hit intersect(Ray ray) {
-
-		Hit nearestHit = Hit.MISS;
-
-		for(int i = 0; i < triangles.length; i++) {
-			Vector p1 = vertexes[triangles[i][0] - 1];
-			Vector p2 = vertexes[triangles[i][1] - 1];
-			Vector p3 = vertexes[triangles[i][2] - 1];
-			
-			Vector normal = p2.minus(p1).cross(p3.minus(p2)).normalized();
-			Plane plane = new Plane(normal, p1);
-			Hit hit = plane.intersect(ray);
-
-			if(hit.hit) {
-				if(sameSide(hit.hitPoint, p1, p2, p3) && sameSide(hit.hitPoint, p2, p1, p3) && sameSide(hit.hitPoint, p3, p1, p2)) {
-					if(hit.distance < nearestHit.distance) {
-						nearestHit = hit;
-					}
-				}
-			}
-			
-		}
-		
-		if(nearestHit.hit) 
-			return nearestHit;
-		
-		return Hit.MISS;
-	}
-	*/
-	
-
 }

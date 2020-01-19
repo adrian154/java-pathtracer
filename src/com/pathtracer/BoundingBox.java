@@ -1,7 +1,13 @@
 package com.pathtracer;
 
+/*
+ * 3D axis aligned bounding box.
+ */
 public class BoundingBox {
 
+	/*
+	 * Minimum and maximum points of the box.
+	 */
 	public Vector min;
 	public Vector max;
 	
@@ -9,11 +15,11 @@ public class BoundingBox {
 		this.min = min;
 		this.max = max;
 	}
-	
+
 	/*
-	 * Checks if a ray intersects with a bounding box.
+	 * Checks if a ray intersects with the bounding box.
 	 */
-	public double intersect(Ray ray) {
+	public boolean doesIntersect(Ray ray) {
 		
 		/* Intersections with all 6 AABB planes */
 		double xmin = (min.x - ray.origin.x) / ray.direction.x;
@@ -25,47 +31,21 @@ public class BoundingBox {
 		double zmin = (min.z - ray.origin.z) / ray.direction.z;
 		double zmax = (max.z - ray.origin.z) / ray.direction.z;
 
+		/* Minimum and maximum intersection distances. */
 		double tmin = Math.max(Math.max(Math.min(xmin, xmax), Math.min(ymin, ymax)), Math.min(zmin, zmax));
 		double tmax = Math.min(Math.min(Math.max(xmin, xmax), Math.max(ymin, ymax)), Math.max(zmin, zmax));
 	
-		/* AABB is behind ray */
-		if(tmax < 0) {
-			return Double.POSITIVE_INFINITY;
-		}
-		
-		/* Doesn't intersect */
-		if(tmin > tmax) {
-			return Double.POSITIVE_INFINITY;
-		}
-		
-		return tmin;
-	}
-	
-public boolean doesIntersect(Ray ray) {
-		
-		/* Intersections with all 6 AABB planes */
-		double xmin = (min.x - ray.origin.x) / ray.direction.x;
-		double xmax = (max.x - ray.origin.x) / ray.direction.x;
-		
-		double ymin = (min.y - ray.origin.y) / ray.direction.y;
-		double ymax = (max.y - ray.origin.y) / ray.direction.y;
-		
-		double zmin = (min.z - ray.origin.z) / ray.direction.z;
-		double zmax = (max.z - ray.origin.z) / ray.direction.z;
-
-		double tmin = Math.max(Math.max(Math.min(xmin, xmax), Math.min(ymin, ymax)), Math.min(zmin, zmax));
-		double tmax = Math.min(Math.min(Math.max(xmin, xmax), Math.max(ymin, ymax)), Math.max(zmin, zmax));
-	
-		/* AABB is behind ray */
+		/* Negative: AABB is behind the ray. */
 		if(tmax < 0) {
 			return false;
 		}
 		
-		/* Doesn't intersect */
+		/* Minimum distance greater than maximum: No intersection. */
 		if(tmin > tmax) {
 			return false;
 		}
 		
+		/* Ray intersects with the box. */
 		return true;
 	}
 	
@@ -73,22 +53,17 @@ public boolean doesIntersect(Ray ray) {
 	 * Checks if a point is contained in the box.
 	 */
 	public boolean contains(Vector vector) {
-		if(vector.x > min.x  && vector.y > min.y && vector.z > min.z && vector.x < max.x && vector.y < max.y && vector.z < max.z)
+		if(vector.x >= min.x  && vector.y >= min.y && vector.z >= min.z && vector.x <= max.x && vector.y <= max.y && vector.z <= max.z)
 			return true;
 		else
 			return false;
 	}
 	
-	public double getWidth() {
-		return max.x - min.x;
-	}
-	
-	public double getHeight() {
-		return max.y - min.y;
-	}
-	
-	public double getDepth() {
-		return max.z - min.z;
-	}
+	/*
+	 * Get width, height, and depth.
+	 */
+	public double getWidth() { return max.x - min.x; }
+	public double getHeight() { return max.y - min.y; }
+	public double getDepth() { return max.z - min.z; }
 	
 }
