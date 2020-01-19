@@ -12,6 +12,8 @@ public class Mesh implements Shape {
 	public int[][] triangles;
 	public OctreeBoundingBox octree;
 	
+	public static int OCTREE_LEVEL = 0;
+	
 	public Mesh(File file, double scale, Vector offset) {
 		
 		ArrayList<Vector> vertexes = new ArrayList<Vector>();
@@ -26,20 +28,22 @@ public class Mesh implements Shape {
 			
 			while((line = reader.readLine()) != null) {
 				
+				lineNum++;
+				
 				/* Avoid newlines */
 				if(line.length() == 0) {
 					continue;
 				}
 				
 				/* Split line */
-				String[] parts = line.split(" ");
+				String[] parts = line.split("\\s+");
 
 				if(!parts[0].equals("v") && !parts[0].equals("f"))
 					continue;
 				
 				/* Validate */
 				if(parts.length != 4) {
-					System.out.println("error in \"" + file.getName() + "\" at line " + lineNum + ": wrong number of parameters (expected 4)");
+					System.out.println("error in \"" + file.getName() + "\" at line " + lineNum + ": wrong number of parameters for operand \"" + parts[0] + "\" (expected 4 but got " + parts.length + ")");
 					return;
 				}
 				
@@ -49,6 +53,13 @@ public class Mesh implements Shape {
 					double d3 = Double.parseDouble(parts[3]) * scale + offset.z;
 					vertexes.add(new Vector(d1, d2, d3));
 				} else {
+					int index1 = parts[1].indexOf('/');
+					int index2 = parts[2].indexOf('/');
+					int index3 = parts[3].indexOf('/');
+					parts[1] = index1 < 0 ? parts[1] : parts[1].substring(0, index1);
+					parts[2] = index2 < 0 ? parts[2] : parts[2].substring(0, index2);
+					parts[3] = index3 < 0 ? parts[3] : parts[3].substring(0, index3);
+							
 					int i1 = Integer.parseInt(parts[1]);
 					int i2 = Integer.parseInt(parts[2]);
 					int i3 = Integer.parseInt(parts[3]);
@@ -60,7 +71,6 @@ public class Mesh implements Shape {
 					triangles.add(tri);
 				}
 				
-				lineNum++;
 			}
 			
 		} catch(Exception exception) {
@@ -174,7 +184,7 @@ public class Mesh implements Shape {
 			if(containedTriangles.length > 0) {
 				
 				/* If it's a terminal node attach the triangles. */
-				if(level == 2) {
+				if(level == Mesh.OCTREE_LEVEL) {
 					subbox.containedTriangles = containedTriangles;
 					subbox.isTerminal = true;
 				} else {
@@ -193,7 +203,7 @@ public class Mesh implements Shape {
 		box.subBoxes = Arrays.copyOfRange(filledBoxes, 0, numFilledBoxes);
 		
 		/* Recurse if level is not too high */
-		if(level < 2) {
+		if(level < Mesh.OCTREE_LEVEL) {
 			
 			/* Recurse. */
 			for(int i = 0; i < box.subBoxes.length; i++) {
@@ -220,6 +230,10 @@ public class Mesh implements Shape {
 	
 	public Hit intersect(Ray ray, OctreeBoundingBox box) {
 		
+		if(!box.doesIntersect(ray)) {
+			return Hit.MISS;
+		}
+		
 		if(box.isTerminal) {
 			return intersect(ray, box.containedTriangles);
 		}
@@ -232,16 +246,15 @@ public class Mesh implements Shape {
 			}
 		}
 		
-		return nearestHit;
+		if(nearestHit.hit)
+			return nearestHit;
+		else
+			return Hit.MISS;
 		
 	}
 	
 	public Hit intersect(Ray ray, int triangles[]) {
-		
-		if(!this.octree.doesIntersect(ray)) {
-			return Hit.MISS;
-		}
-		
+
 		Hit nearestHit = Hit.MISS;
 		
 		/* Loop through triangles */
@@ -271,6 +284,37 @@ public class Mesh implements Shape {
 		return Hit.MISS;
 		
 	}
+	
+	/*
+	public Hit intersect(Ray ray) {
+
+		Hit nearestHit = Hit.MISS;
+
+		for(int i = 0; i < triangles.length; i++) {
+			Vector p1 = vertexes[triangles[i][0] - 1];
+			Vector p2 = vertexes[triangles[i][1] - 1];
+			Vector p3 = vertexes[triangles[i][2] - 1];
+			
+			Vector normal = p2.minus(p1).cross(p3.minus(p2)).normalized();
+			Plane plane = new Plane(normal, p1);
+			Hit hit = plane.intersect(ray);
+
+			if(hit.hit) {
+				if(sameSide(hit.hitPoint, p1, p2, p3) && sameSide(hit.hitPoint, p2, p1, p3) && sameSide(hit.hitPoint, p3, p1, p2)) {
+					if(hit.distance < nearestHit.distance) {
+						nearestHit = hit;
+					}
+				}
+			}
+			
+		}
+		
+		if(nearestHit.hit) 
+			return nearestHit;
+		
+		return Hit.MISS;
+	}
+	*/
 	
 
 }
