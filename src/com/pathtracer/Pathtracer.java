@@ -7,7 +7,7 @@ public class Pathtracer {
 
 	public static double MIN_DISTANCE = 0.001;
 	
-	public static int NUM_PRIMARY_RAYS = 10;
+	public static int NUM_PRIMARY_RAYS = 2;
 	public static int NUM_SECONDARY_RAYS = 1;
 
 	public static Vector ambient = new Vector(20.0, 20.0, 20.0);
@@ -90,8 +90,13 @@ public class Pathtracer {
 				double worldY = ((double)y - output.height / 2.0) / output.height * camera.sensorSize;
 						
 				Vector locDirection = new Vector(worldX, worldY, camera.focalLength);
-				Vector direction = Transforms.localToWorldCoords(locDirection, camera.up.cross(camera.lookingAt), camera.up, camera.lookingAt);
 				
+				Vector w = camera.lookingAt;
+				Vector u = camera.lookingAt.cross(camera.up);
+				Vector v = camera.up;
+				
+				Vector direction = Transforms.localToWorldCoords(locDirection, u, v, w);
+
 				Ray primaryRay = new Ray(camera.position, direction);
 				Vector color = new Vector(0.0, 0.0, 0.0);
 				
@@ -105,7 +110,7 @@ public class Pathtracer {
 				
 			}
 			
-			System.out.println("Now on line " + x);
+			//System.out.println("Now on line " + x);
 		}
 		
 	}

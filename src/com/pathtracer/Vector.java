@@ -1,5 +1,7 @@
 package com.pathtracer;
 
+import java.text.DecimalFormat;
+
 /*
  * Vector: Class for 3D vector.
  */
@@ -78,7 +80,8 @@ public class Vector {
 	}
 	
 	public String toString() {
-		return new String("(" + this.x + ", " + this.y + ", " + this.z + ")");
+		DecimalFormat f = new DecimalFormat("#.#");
+		return new String("(" + f.format(this.x) + ", " + f.format(this.y) + ", " + f.format(this.z) + ")");
 	}
 	
 	public static Vector randomInHemisphere() {

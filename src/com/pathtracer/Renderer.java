@@ -11,8 +11,6 @@ public class Renderer {
 	public static ExecutorService executorService;
 	
 	public static long startTime;
-
-	public static double lightAngle = 0.0;
 	
 	/*
 	 * Multithreaded render core.
@@ -65,7 +63,7 @@ public class Renderer {
 		if(finishedThreads == numThreads) {
 			
 			/* Write to file */
-			output.writeToFile((int)(lightAngle / 10) + ".png");
+			output.writeToFile("output.png");
 			
 			/* Check timing */
 			long elapsed = System.currentTimeMillis() - startTime;
