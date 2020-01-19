@@ -10,4 +10,6 @@ A pathtracer written in Java.
 
 ## Gallery
 
+![image](https://i.imgur.com/T6QSeCB.gif)
+
 ![image](https://i.imgur.com/8GLaNmy.png)
