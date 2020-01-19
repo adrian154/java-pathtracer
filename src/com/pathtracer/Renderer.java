@@ -12,6 +12,8 @@ public class Renderer {
 	
 	public static long startTime;
 
+	public static double lightAngle = 0.0;
+	
 	/*
 	 * Multithreaded render core.
 	 */
@@ -61,13 +63,18 @@ public class Renderer {
 		if(finishedThreads == numThreads) {
 			
 			/* Write to file */
-			output.writeToFile("output_mt.png");
+			output.writeToFile((int)(lightAngle / 10) + ".png");
 			
 			/* Check timing */
 			long elapsed = System.currentTimeMillis() - startTime;
 			System.out.println("------------------- FINISHED IN " + elapsed + " MILLISECONDS -------------------");
 			
-			Renderer.executorService.shutdown();
+			lightAngle += 10;
+			Pathtracer.skyColorDirection = Vector.fromSpherical(lightAngle, 70);
+			
+			Renderer.render(Main.camera, Main.scene, Main.output);
+			
+			//Renderer.executorService.shutdown();
 			
 		}
 	}

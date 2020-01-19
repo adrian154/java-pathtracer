@@ -12,7 +12,7 @@ public class Mesh implements Shape {
 	public int[][] triangles;
 	public OctreeBoundingBox octree;
 	
-	public static int OCTREE_LEVEL = 0;
+	public static int OCTREE_LEVEL = 2;
 	
 	public Mesh(File file, double scale, Vector offset) {
 		
@@ -42,8 +42,11 @@ public class Mesh implements Shape {
 					continue;
 				
 				/* Validate */
-				if(parts.length != 4) {
-					System.out.println("error in \"" + file.getName() + "\" at line " + lineNum + ": wrong number of parameters for operand \"" + parts[0] + "\" (expected 4 but got " + parts.length + ")");
+				if(parts[0].equals("v") && parts.length != 4) {
+					System.out.println("error in \"" + file.getName() + "\" at line " + lineNum + ": wrong number of parameters for vertex (expected 4 but got " + parts.length + ")");
+					return;
+				} else if(parts[0].equals("f") && parts.length < 4) {
+					System.out.println("error in \"" + file.getName() + "\" at line " + lineNum + ": too few parameters for face (expected at least 4 but got " + parts.length + ")");
 					return;
 				}
 				
@@ -53,22 +56,21 @@ public class Mesh implements Shape {
 					double d3 = Double.parseDouble(parts[3]) * scale + offset.z;
 					vertexes.add(new Vector(d1, d2, d3));
 				} else {
-					int index1 = parts[1].indexOf('/');
-					int index2 = parts[2].indexOf('/');
-					int index3 = parts[3].indexOf('/');
-					parts[1] = index1 < 0 ? parts[1] : parts[1].substring(0, index1);
-					parts[2] = index2 < 0 ? parts[2] : parts[2].substring(0, index2);
-					parts[3] = index3 < 0 ? parts[3] : parts[3].substring(0, index3);
-							
-					int i1 = Integer.parseInt(parts[1]);
-					int i2 = Integer.parseInt(parts[2]);
-					int i3 = Integer.parseInt(parts[3]);
 					
-					int tri[] = new int[3];
-					tri[0] = i1;
-					tri[1] = i2;
-					tri[2] = i3;
-					triangles.add(tri);
+					int indexes[] = new int[parts.length - 1];
+					for(int vert = 0; vert < indexes.length; vert++) {
+						int strindex = parts[vert + 1].indexOf('/');
+						indexes[vert] = Integer.parseInt(strindex < 0 ? parts[vert + 1] : parts[vert + 1].substring(0, strindex));
+					}
+					
+					for(int vert = 0; vert < indexes.length - 2; vert++) {
+						int tri[] = new int[3];
+						tri[0] = indexes[vert];
+						tri[1] = indexes[vert + 1];
+						tri[2] = indexes[vert + 2];
+						triangles.add(tri);
+					}
+					
 				}
 				
 			}

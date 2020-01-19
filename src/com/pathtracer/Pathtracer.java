@@ -7,8 +7,11 @@ public class Pathtracer {
 
 	public static double MIN_DISTANCE = 0.001;
 	
-	public static int NUM_PRIMARY_RAYS = 6;
+	public static int NUM_PRIMARY_RAYS = 10;
 	public static int NUM_SECONDARY_RAYS = 3;
+	
+	public static Vector skyColor = new Vector(255.0, 255.0 * 0.9, 255.0 * 0.8);
+	public static Vector skyColorDirection = Vector.fromSpherical(0, 70);
 	
 	public static ObjectHit getHit(Ray ray, Scene scene) {
 		
@@ -58,7 +61,7 @@ public class Pathtracer {
 		
 			return color.plus(incoming);
 		} else {
-			return new Vector(0.0, 0.0, 0.0);
+			return skyColor.times(skyColorDirection.dot(ray.direction));
 		}
 		
 	}

@@ -91,4 +91,14 @@ public class Vector {
 		);
 	}
 	
+	public static Vector fromSpherical(double theta, double phi) {
+		theta *= Math.PI / 180;
+		phi *= Math.PI / 180;
+		return new Vector(
+				Math.sin(phi) * Math.cos(theta),
+				Math.abs(Math.cos(phi)),
+				Math.sin(theta) * Math.sin(phi)
+			);
+	}
+	
 }
