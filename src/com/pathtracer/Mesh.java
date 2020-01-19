@@ -9,7 +9,7 @@ public class Mesh implements Shape {
 
 	public Vector[] vertexes;
 	public int[][] triangles;
-	public BoundingBox boundingBox;
+	public OctreeBoundingBox octree;
 	
 	public Mesh(File file, double scale, Vector offset) {
 		
@@ -70,15 +70,42 @@ public class Mesh implements Shape {
 		this.vertexes = vertexes.toArray(new Vector[vertexes.size()]);
 		this.triangles = triangles.toArray(new int[triangles.size()][3]);
 		
-		this.computeBoundingBox();
+		this.computeOctree();
 		
 	}
 	
 	/*
-	 * Compute the bounding box occupied by the mesh.
+	 * Get triangles in a bounding box. 	
 	 */
-	public void computeBoundingBox() {
+	public int[] getTrianglesInBoundingBox(BoundingBox box) {
 		
+		/* ArrayList of triangles (convert to array later) */
+		ArrayList<Integer> triangles = new ArrayList<Integer>();
+		
+		for(int i = 0; i < this.triangles.length; i++) {
+			
+			/* Check if part of the triangle are contained in the bounding box. */
+			int triangle[] = this.triangles[i];
+			Vector v1 = vertexes[triangle[0]];
+			Vector v2 = vertexes[triangle[1]];
+			Vector v3 = vertexes[triangle[3]];
+			
+			if(box.contains(v1) || box.contains(v2) || box.contains(v3)) {
+				triangles.add(i);
+			}
+		}
+		
+		/* Convert to array. */
+		return triangles.stream().mapToInt(Integer::intValue).toArray();
+		
+	}
+	
+	/*
+	 * Create an octree for the mesh.
+	 */
+	public void computeOctree() {
+		
+		/* First, compute the bounding box of the mesh */
 		double minX = Double.POSITIVE_INFINITY;
 		double minY = Double.POSITIVE_INFINITY;
 		double minZ = Double.POSITIVE_INFINITY;
@@ -102,7 +129,37 @@ public class Mesh implements Shape {
 		Vector min = new Vector(minX, minY, minZ);
 		Vector max = new Vector(maxX, maxY, maxZ);
 
-		this.boundingBox = new BoundingBox(min, max);
+		this.octree = new OctreeBoundingBox(min, max);
+		splitBox(this.octree);
+		
+	}
+	
+	/*
+	 * Split box into 8 subboxes.
+	 */
+	public void splitBox(OctreeBoundingBox box) {
+		
+		Vector min = box.min;
+		Vector max = box.max;
+		
+		Vector middle = min.plus(max.minus(min).divBy(2.0));
+		double width = max.x - min.x;
+		double height = max.y - min.y;
+		double depth = max.z - min.z;
+		
+		OctreeBoundingBox boxes[] = new OctreeBoundingBox[8];
+		boxes[0] = new OctreeBoundingBox(min, middle);
+		boxes[1] = new OctreeBoundingBox(min.plus(new Vector(0.0, 0.0, depth / 2)), middle.plus(new Vector(0.0, 0.0, depth / 2)));
+		boxes[2] = new OctreeBoundingBox(min.plus(new Vector(width / 2, 0.0, 0.0)), middle.plus(new Vector(width / 2, 0.0, 0.0)));
+		boxes[3] = new OctreeBoundingBox(min.plus(new Vector(width / 2, 0.0, depth / 2)), middle.plus(new Vector(width / 2, 0.0, depth / 2)));
+		boxes[4] = new OctreeBoundingBox(min.plus(new Vector(0.0, height / 2, 0.0)), middle.plus(new Vector(0.0, height / 2, 0.0)));
+		boxes[5] = new OctreeBoundingBox(min.plus(new Vector(0.0, height / 2, depth / 2)), middle.plus(new Vector(0.0, height / 2, depth / 2)));
+		boxes[6] = new OctreeBoundingBox(min.plus(new Vector(width / 2, height / 2, 0.0)), middle.plus(new Vector(width / 2, 0.0, 0.0)));
+		boxes[7] = new OctreeBoundingBox(middle, max);
+		
+		/* Kind of a kludge - remove unfilled boxes. */
+		int numUnfilledBoxes = 0;
+		
 		
 	}
 	
@@ -118,7 +175,7 @@ public class Mesh implements Shape {
 	
 	public Hit intersect(Ray ray) {
 		
-		if(!this.boundingBox.doesIntersect(ray)) {
+		if(!this.octree.doesIntersect(ray)) {
 			return Hit.MISS;
 		}
 		

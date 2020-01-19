@@ -10,6 +10,9 @@ public class BoundingBox {
 		this.max = max;
 	}
 	
+	/*
+	 * Checks if a ray intersects with a bounding box.
+	 */
 	public boolean doesIntersect(Ray ray) {
 		
 		/* Intersections with all 6 AABB planes */
@@ -36,6 +39,28 @@ public class BoundingBox {
 		}
 		
 		return true;
+	}
+	
+	/*
+	 * Checks if a point is contained in the box.
+	 */
+	public boolean contains(Vector vector) {
+		if(vector.x > min.x  && vector.y > min.y && vector.z > min.z && vector.x < max.x && vector.y < max.y && vector.z < max.z)
+			return true;
+		else
+			return false;
+	}
+	
+	public double getWidth() {
+		return max.x - min.x;
+	}
+	
+	public double getHeight() {
+		return max.y - min.y;
+	}
+	
+	public double getDepth() {
+		return max.z - min.z;
 	}
 	
 }
