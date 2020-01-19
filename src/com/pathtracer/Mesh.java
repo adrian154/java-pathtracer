@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Mesh implements Shape {
 
@@ -86,9 +87,9 @@ public class Mesh implements Shape {
 			
 			/* Check if part of the triangle are contained in the bounding box. */
 			int triangle[] = this.triangles[i];
-			Vector v1 = vertexes[triangle[0]];
-			Vector v2 = vertexes[triangle[1]];
-			Vector v3 = vertexes[triangle[3]];
+			Vector v1 = vertexes[triangle[0] - 1];
+			Vector v2 = vertexes[triangle[1] - 1];
+			Vector v3 = vertexes[triangle[2] - 1];
 			
 			if(box.contains(v1) || box.contains(v2) || box.contains(v3)) {
 				triangles.add(i);
@@ -130,14 +131,16 @@ public class Mesh implements Shape {
 		Vector max = new Vector(maxX, maxY, maxZ);
 
 		this.octree = new OctreeBoundingBox(min, max);
-		splitBox(this.octree);
+		splitBox(this.octree, 0);
 		
 	}
 	
 	/*
 	 * Split box into 8 subboxes.
 	 */
-	public void splitBox(OctreeBoundingBox box) {
+	public void splitBox(OctreeBoundingBox box, int level) {
+		
+		System.out.println("Splitting level " + level + " box.");
 		
 		Vector min = box.min;
 		Vector max = box.max;
@@ -147,6 +150,7 @@ public class Mesh implements Shape {
 		double height = max.y - min.y;
 		double depth = max.z - min.z;
 		
+		/* Split box into 8 subboxes. */
 		OctreeBoundingBox boxes[] = new OctreeBoundingBox[8];
 		boxes[0] = new OctreeBoundingBox(min, middle);
 		boxes[1] = new OctreeBoundingBox(min.plus(new Vector(0.0, 0.0, depth / 2)), middle.plus(new Vector(0.0, 0.0, depth / 2)));
@@ -157,9 +161,45 @@ public class Mesh implements Shape {
 		boxes[6] = new OctreeBoundingBox(min.plus(new Vector(width / 2, height / 2, 0.0)), middle.plus(new Vector(width / 2, 0.0, 0.0)));
 		boxes[7] = new OctreeBoundingBox(middle, max);
 		
-		/* Kind of a kludge - remove unfilled boxes. */
-		int numUnfilledBoxes = 0;
+		/* Store filled boxes. */
+		OctreeBoundingBox filledBoxes[] = new OctreeBoundingBox[8];
+		int numFilledBoxes = 0;
 		
+		for(int i = 0; i < 8; i++) {
+			
+			/* Count number of triangles in box. */
+			int containedTriangles[] = getTrianglesInBoundingBox(boxes[i]);
+			
+			/* If there are triangles in the box, */
+			if(containedTriangles.length > 0) {
+				
+				/* If it's a terminal node attach the triangles. */
+				if(level == 2) {
+					boxes[i].containedTriangles = containedTriangles;
+					boxes[i].subBoxes = new OctreeBoundingBox[0];
+					System.out.println("Attached faces to terminal node.");
+				}
+
+				/* Add box to filledBoxes array. */
+				filledBoxes[numFilledBoxes] = boxes[i];
+				numFilledBoxes++;
+				
+			}
+			
+		}
+		
+		System.out.println("Box had " + numFilledBoxes + " filled subboxes.");
+		
+		/* Recurse if level is not too high */
+		if(level < 2) {
+			
+			/* Attach subboxes. */
+			box.subBoxes = Arrays.copyOfRange(filledBoxes, 0, numFilledBoxes);
+			for(int i = 0; i < box.subBoxes.length; i++) {
+				splitBox(box.subBoxes[i], level + 1);
+			}
+			
+		}
 		
 	}
 	
@@ -174,6 +214,28 @@ public class Mesh implements Shape {
 	}
 	
 	public Hit intersect(Ray ray) {
+		return intersect(ray, octree);
+	}
+	
+	public Hit intersect(Ray ray, OctreeBoundingBox box) {
+		
+		if(box.subBoxes.length == 0) {
+			return intersect(ray, box.containedTriangles);
+		}
+		
+		Hit nearestHit = Hit.MISS;
+		for(int i = 0; i < box.subBoxes.length; i++) {
+			Hit hit = intersect(ray, box.subBoxes[i]);
+			if(hit.hit && hit.distance < nearestHit.distance) {
+				nearestHit = hit;
+			}
+		}
+		
+		return nearestHit;
+		
+	}
+	
+	public Hit intersect(Ray ray, int triangles[]) {
 		
 		if(!this.octree.doesIntersect(ray)) {
 			return Hit.MISS;
@@ -183,9 +245,9 @@ public class Mesh implements Shape {
 		
 		/* Loop through triangles */
 		for(int i = 0; i < triangles.length; i++) {
-			Vector p1 = vertexes[triangles[i][0] - 1];
-			Vector p2 = vertexes[triangles[i][1] - 1];
-			Vector p3 = vertexes[triangles[i][2] - 1];
+			Vector p1 = vertexes[this.triangles[triangles[i]][0] - 1];
+			Vector p2 = vertexes[this.triangles[triangles[i]][1] - 1];
+			Vector p3 = vertexes[this.triangles[triangles[i]][2] - 1];
 			
 			Vector normal = p2.minus(p1).cross(p3.minus(p2)).normalized();
 			Plane plane = new Plane(normal, p1);
