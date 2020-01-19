@@ -1,7 +1,6 @@
 package com.pathtracer;
 
 import java.io.File;
-import java.text.DecimalFormat;
 
 public class Main {
 
@@ -24,21 +23,24 @@ public class Main {
 		Scene scene = new Scene();
 		
 		/* Add objects to scene */
-		Mesh mesh = new Mesh(new File("garfield.obj"), 0.05, new Vector(0.0, -3.0, 0.0));
-		Plane plane = new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, -3.0, 0.0));
+		Mesh mesh = new Mesh(new File("garfield.obj"), 0.05, new Vector(0.0, -5.0, 0.0));
+		Plane plane = new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, -5.0, 0.0));
+		Circle circle = new Circle(new Vector(0.0, 1.0, 0.0), new Vector(0.0, 8.0, 0.0), 5.0);
 		
 		Material diff = new Material(new Vector(1.0, 1.0, 1.0), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
-		Material mat = new Material(new Vector(1.0, 1.0, 1.0), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
+		Material mat = new Material(new Vector(1.0, 0.6, 0.0), new Vector(0.0, 0.0, 0.0), 0.5, 0.2);
+		Material source = new Material(new Vector(1.0, 1.0, 1.0), new Vector(1000.0, 1000.0, 1000.0), 1.0, 0.0);
 		
+		scene.objects.add(new WorldObject(plane, diff));
 		scene.objects.add(new WorldObject(mesh, mat));
-		//scene.objects.add(new WorldObject(plane, diff));
+		scene.objects.add(new WorldObject(circle, source));
 		
 		/* Start live preview. */
 		LivePreviewFrame frame = new LivePreviewFrame(output.image, 2);
 		frame.setVisible(true);
 		
 		/* Render. */
-		Renderer.render(camera, scene, output);
+		Renderer.startRender(camera, scene, output);
 		
 	}
 	

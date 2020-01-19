@@ -15,7 +15,7 @@ public class Renderer {
 	/*
 	 * Multithreaded render core.
 	 */
-	public static void render(Camera camera, Scene scene, Output output) {
+	public static void startRender(Camera camera, Scene scene, Output output) {
 		
 		/* Start timing */
 		startTime = System.currentTimeMillis();

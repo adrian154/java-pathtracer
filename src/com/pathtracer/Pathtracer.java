@@ -1,16 +1,13 @@
  package com.pathtracer;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 public class Pathtracer {
 
 	public static double MIN_DISTANCE = 0.001;
 	
-	public static int NUM_PRIMARY_RAYS = 2;
-	public static int NUM_SECONDARY_RAYS = 1;
+	public static int NUM_PRIMARY_RAYS = 10;
+	public static int NUM_SECONDARY_RAYS = 3;
 
-	public static Vector ambient = new Vector(20.0, 20.0, 20.0);
+	public static Vector ambient = new Vector(10.0, 15.0, 25.0);
 	
 	/*
 	 * Trace actual ray.
@@ -19,9 +16,19 @@ public class Pathtracer {
 		
 		ObjectHit nearestHit = new ObjectHit(Hit.MISS, new Material());
 		
-		for(WorldObject object : scene.objects) {
+		for(int i = 0; i < scene.objects.size(); i++) {
+			WorldObject object = scene.objects.get(i);
+			
 			ObjectHit hit = object.intersect(ray);
 			if(hit.hit.hit && hit.hit.distance < nearestHit.hit.distance) {
+				if(i == 0) {
+					double texX = hit.hit.hitPoint.x;
+					double texZ = hit.hit.hitPoint.z;
+					boolean a = Math.sin(texX) > 0.0 ? true : false;
+					boolean b = Math.sin(texZ) > 0.0 ? true : false;
+					Vector color = a ^ b ? new Vector(1.0, 1.0, 1.0) : new Vector(0.0, 0.0, 0.0);
+					hit.material.color = color;
+				}
 				nearestHit = hit;
 			}
 		}
@@ -81,13 +88,16 @@ public class Pathtracer {
 	 */
 	public static void renderSection(Camera camera, Scene scene, Output output, int start, int end) {
 		
+		double pixelWidth = camera.sensorSize / output.width;
+		double pixelHeight = camera.sensorSize / output.height;
+		
 		for(int x = start; x < end; x++) {
 			for(int y = 0; y < output.height; y++) {
 				
 				output.writePixel(x, y, new Vector(0.0, 255.0, 0.0));
 				
-				double worldX = ((double)x - output.width / 2.0) / output.width * camera.sensorSize;
-				double worldY = ((double)y - output.height / 2.0) / output.height * camera.sensorSize;
+				double worldX = ((double)x - output.width / 2.0) / output.width * camera.sensorSize;// + Math.random() * pixelWidth;
+				double worldY = ((double)y - output.height / 2.0) / output.height * camera.sensorSize;// + Math.random() * pixelHeight;
 						
 				Vector locDirection = new Vector(worldX, worldY, camera.focalLength);
 				
