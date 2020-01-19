@@ -139,9 +139,7 @@ public class Mesh implements Shape {
 	 * Split box into 8 subboxes.
 	 */
 	public void splitBox(OctreeBoundingBox box, int level) {
-		
-		System.out.println("Splitting level " + level + " box.");
-		
+
 		Vector min = box.min;
 		Vector max = box.max;
 		
@@ -158,7 +156,7 @@ public class Mesh implements Shape {
 		boxes[3] = new OctreeBoundingBox(min.plus(new Vector(width / 2, 0.0, depth / 2)), middle.plus(new Vector(width / 2, 0.0, depth / 2)));
 		boxes[4] = new OctreeBoundingBox(min.plus(new Vector(0.0, height / 2, 0.0)), middle.plus(new Vector(0.0, height / 2, 0.0)));
 		boxes[5] = new OctreeBoundingBox(min.plus(new Vector(0.0, height / 2, depth / 2)), middle.plus(new Vector(0.0, height / 2, depth / 2)));
-		boxes[6] = new OctreeBoundingBox(min.plus(new Vector(width / 2, height / 2, 0.0)), middle.plus(new Vector(width / 2, 0.0, 0.0)));
+		boxes[6] = new OctreeBoundingBox(min.plus(new Vector(width / 2, height / 2, 0.0)), middle.plus(new Vector(width / 2, height / 2, 0.0)));
 		boxes[7] = new OctreeBoundingBox(middle, max);
 		
 		/* Store filled boxes. */
@@ -167,34 +165,37 @@ public class Mesh implements Shape {
 		
 		for(int i = 0; i < 8; i++) {
 			
+			OctreeBoundingBox subbox = boxes[i];
+			
 			/* Count number of triangles in box. */
-			int containedTriangles[] = getTrianglesInBoundingBox(boxes[i]);
+			int containedTriangles[] = getTrianglesInBoundingBox(subbox);
 			
 			/* If there are triangles in the box, */
 			if(containedTriangles.length > 0) {
 				
 				/* If it's a terminal node attach the triangles. */
 				if(level == 2) {
-					boxes[i].containedTriangles = containedTriangles;
-					boxes[i].subBoxes = new OctreeBoundingBox[0];
-					System.out.println("Attached faces to terminal node.");
+					subbox.containedTriangles = containedTriangles;
+					subbox.isTerminal = true;
+				} else {
+					subbox.isTerminal = false;
 				}
 
 				/* Add box to filledBoxes array. */
-				filledBoxes[numFilledBoxes] = boxes[i];
+				filledBoxes[numFilledBoxes] = subbox;
 				numFilledBoxes++;
 				
 			}
 			
 		}
-		
-		System.out.println("Box had " + numFilledBoxes + " filled subboxes.");
+
+		/* Attach subboxes. */
+		box.subBoxes = Arrays.copyOfRange(filledBoxes, 0, numFilledBoxes);
 		
 		/* Recurse if level is not too high */
 		if(level < 2) {
 			
-			/* Attach subboxes. */
-			box.subBoxes = Arrays.copyOfRange(filledBoxes, 0, numFilledBoxes);
+			/* Recurse. */
 			for(int i = 0; i < box.subBoxes.length; i++) {
 				splitBox(box.subBoxes[i], level + 1);
 			}
@@ -219,7 +220,7 @@ public class Mesh implements Shape {
 	
 	public Hit intersect(Ray ray, OctreeBoundingBox box) {
 		
-		if(box.subBoxes.length == 0) {
+		if(box.isTerminal) {
 			return intersect(ray, box.containedTriangles);
 		}
 		
