@@ -27,8 +27,10 @@ public class Renderer {
 		Renderer.finishedThreads = 0;
 		Renderer.output = output;
 		
+		/* Set up thread pool. */
 		executorService = Executors.newFixedThreadPool(numThreads);
 		
+		/* Divide work between threads. */
 		int linesPerCore = output.width / numThreads;
 		
 		for(int i = 0 ; i < numThreads; i++) {

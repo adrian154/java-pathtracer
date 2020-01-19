@@ -1,5 +1,8 @@
 package com.pathtracer;
 
+/*
+ * Object hit information. Contains material info.
+ */
 public class ObjectHit {
 
 	public Hit hit;

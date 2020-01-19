@@ -1,5 +1,8 @@
 package com.pathtracer;
 
+/*
+ * Sphere primitive.
+ */
 public class Sphere implements Shape {
 
 	public Vector center;

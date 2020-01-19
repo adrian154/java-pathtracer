@@ -1,5 +1,8 @@
 package com.pathtracer;
 
+/*
+ * Ray.
+ */
 public class Ray {
 
 	public Vector direction;

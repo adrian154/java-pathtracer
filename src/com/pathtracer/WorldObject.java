@@ -1,5 +1,8 @@
 package com.pathtracer;
 
+/*
+ * Object in the world. Has geometry and material.
+ */
 public class WorldObject {
 
 	public Shape shape;

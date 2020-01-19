@@ -22,6 +22,7 @@ public class Output {
 	
 	}
 	
+	/* Write pixel to location. */
 	public void writePixel(int x, int y, Vector value) {
 
 		/* Clamp value to 0 - 0xFF */

@@ -1,5 +1,8 @@
 package com.pathtracer;
 
+/*
+ * Infinite plane.
+ */
 public class Plane implements Shape {
 
 	public Vector normal;
@@ -10,15 +13,21 @@ public class Plane implements Shape {
 		this.point = point;
 	}
 	
+	/*
+	 * Ray-plane intersection.
+	 */
 	public Hit intersect(Ray ray) {
 		
+		/* Check if equation has solution.*/
 		double denom = ray.direction.dot(this.normal);
 		if(denom == 0) {
 			return Hit.MISS;
 		}
 		
+		/* Solve for the distance. */
 		double distance = this.point.minus(ray.origin).dot(this.normal) / denom;
 		
+		/* Make sure hit point is not behind ray. */
 		if(distance < Pathtracer.MIN_DISTANCE) {
 			return Hit.MISS;
 		}

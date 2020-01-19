@@ -8,11 +8,13 @@ public class Pathtracer {
 	public static double MIN_DISTANCE = 0.001;
 	
 	public static int NUM_PRIMARY_RAYS = 10;
-	public static int NUM_SECONDARY_RAYS = 3;
+	public static int NUM_SECONDARY_RAYS = 1;
+
+	public static Vector ambient = new Vector(20.0, 20.0, 20.0);
 	
-	public static Vector skyColor = new Vector(255.0, 255.0 * 0.9, 255.0 * 0.8);
-	public static Vector skyColorDirection = Vector.fromSpherical(0, 70);
-	
+	/*
+	 * Trace actual ray.
+	 */
 	public static ObjectHit getHit(Ray ray, Scene scene) {
 		
 		ObjectHit nearestHit = new ObjectHit(Hit.MISS, new Material());
@@ -34,16 +36,22 @@ public class Pathtracer {
 	 */
 	public static Vector traceRay(Ray ray, Scene scene, int bounces) {
 		
-		if(bounces > 2)
+		/* Terminate after too  many bounces. */
+		if(bounces > 5)
 			return new Vector(0.0, 0.0, 0.0);
 		
+		/* Trace ray. */
 		ObjectHit hit = getHit(ray, scene);
 		
 		if(hit.hit.hit) {
+			
+			/* Light emitted by the hit location. */
 			Vector color = hit.material.emissiveColor;
 			
+			/* Light going into the hit location. */
 			Vector incoming = new Vector(0.0, 0.0, 0.0);
 			
+			/* Do secondary rays. */
 			for(int i = 0; i < NUM_SECONDARY_RAYS; i++) {
 				Vector newDirection;
 				
@@ -61,21 +69,9 @@ public class Pathtracer {
 		
 			return color.plus(incoming);
 		} else {
-			return skyColor.times(skyColorDirection.dot(ray.direction));
-		}
-		
-	}
-	
-	/*
-	 * Test function. Traces ray
-	 */
-	public static Vector traceRayNorm(Ray ray, Scene scene, int bounces) {
-		
-		ObjectHit hit = getHit(ray, scene);
-		if(hit.hit.hit) {
-			return (new Vector(0.5, 0.5, 0.5).plus(hit.hit.normal.normalized().times(0.5))).times(100);
-		} else {
-			return new Vector(0.0, 0.0, 0.0);
+			
+			/* If the ray missed return the ambient color. */
+			return ambient;
 		}
 		
 	}
@@ -93,7 +89,8 @@ public class Pathtracer {
 				double worldX = ((double)x - output.width / 2.0) / output.width * camera.sensorSize;
 				double worldY = ((double)y - output.height / 2.0) / output.height * camera.sensorSize;
 						
-				Vector direction = new Vector(worldX, worldY, camera.focalLength);
+				Vector locDirection = new Vector(worldX, worldY, camera.focalLength);
+				Vector direction = Transforms.localToWorldCoords(locDirection, camera.up.cross(camera.lookingAt), camera.up, camera.lookingAt);
 				
 				Ray primaryRay = new Ray(camera.position, direction);
 				Vector color = new Vector(0.0, 0.0, 0.0);

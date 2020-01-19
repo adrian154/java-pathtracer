@@ -1,5 +1,8 @@
 package com.pathtracer;
 
+/*
+ * Various transforms.
+ */
 public class Transforms {
 
 	public static Vector localToWorldCoords(Vector vector, Vector bvx, Vector bvy, Vector bvz) {
