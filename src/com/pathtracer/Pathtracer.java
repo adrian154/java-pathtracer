@@ -4,7 +4,7 @@ public class Pathtracer {
 
 	public static double MIN_DISTANCE = 0.001;
 	
-	public static int NUM_PRIMARY_RAYS = 50;
+	public static int NUM_PRIMARY_RAYS = 10000;
 	public static int NUM_SECONDARY_RAYS = 6;
 
 	public static Vector ambient = new Vector(0.0, 0.0, 0.0);
@@ -105,11 +105,12 @@ public class Pathtracer {
 					Vector direction = Transforms.localToWorldCoords(locDirection, u, v, w);
 
 					Ray primaryRay = new Ray(camera.position, direction);
-					
+
 					color = color.plus(traceRay(primaryRay, scene, 0));
 				}
 				
-				color.divBy(NUM_PRIMARY_RAYS);
+				color.divBy(NUM_PRIMARY_RAYS * 1000);
+				System.out.println(color);
 				
 				output.writePixel(x, y, color);
 				

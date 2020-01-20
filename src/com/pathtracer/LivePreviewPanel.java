@@ -18,7 +18,7 @@ public class LivePreviewPanel extends JPanel implements ActionListener {
 	public Timer timer;
 	public BufferedImage image;
 	public int outputScale;
-	
+
 	public LivePreviewPanel(BufferedImage image, int outputScale) {
 		this.image = image;
 		this.outputScale = outputScale;

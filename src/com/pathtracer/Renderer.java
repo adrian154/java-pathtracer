@@ -12,6 +12,8 @@ public class Renderer {
 	
 	public static long startTime;
 	
+	public static long numTriangleTests = 0;
+	
 	/*
 	 * Multithreaded render core.
 	 */
@@ -68,7 +70,8 @@ public class Renderer {
 			/* Check timing */
 			long elapsed = System.currentTimeMillis() - startTime;
 			System.out.println("------------------- FINISHED IN " + elapsed + " MILLISECONDS -------------------");
-
+			System.out.println("Num. ray triangle tests: " + Renderer.numTriangleTests);
+			
 			/* Shut down executor service */
 			Renderer.executorService.shutdown();
 			
