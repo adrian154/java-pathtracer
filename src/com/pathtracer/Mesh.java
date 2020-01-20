@@ -21,14 +21,14 @@ public class Mesh implements Shape {
 	public OctreeBoundingBox octree;
 	
 	/* Static field - octree level, for mesh construction. */
-	public static int OCTREE_LEVEL = 1;
+	public static int OCTREE_LEVEL = 2;
 	
 	/* Constructor -  load mesh. */
 	public Mesh(File file, double scale, Vector offset) {
 		
 		ArrayList<Vector> vertexes = new ArrayList<Vector>();
 		ArrayList<int[]> triangles = new ArrayList<int[]>();
-		
+
 		/* Read mesh into arraylist */
 		try(BufferedReader reader = new BufferedReader(new FileReader(file))) {
 			
@@ -73,6 +73,7 @@ public class Mesh implements Shape {
 					
 					/* Load polygon */
 					int indexes[] = new int[parts.length - 1];
+		
 					for(int vert = 0; vert < indexes.length; vert++) {
 						int strindex = parts[vert + 1].indexOf('/');
 						indexes[vert] = Integer.parseInt(strindex < 0 ? parts[vert + 1] : parts[vert + 1].substring(0, strindex));

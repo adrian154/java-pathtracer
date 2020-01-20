@@ -4,10 +4,10 @@ public class Pathtracer {
 
 	public static double MIN_DISTANCE = 0.001;
 	
-	public static int NUM_PRIMARY_RAYS = 10;
-	public static int NUM_SECONDARY_RAYS = 3;
+	public static int NUM_PRIMARY_RAYS = 50;
+	public static int NUM_SECONDARY_RAYS = 6;
 
-	public static Vector ambient = new Vector(10.0, 15.0, 25.0);
+	public static Vector ambient = new Vector(0.0, 0.0, 0.0);
 	
 	/*
 	 * Trace actual ray.
@@ -20,15 +20,8 @@ public class Pathtracer {
 			WorldObject object = scene.objects.get(i);
 			
 			ObjectHit hit = object.intersect(ray);
+			
 			if(hit.hit.hit && hit.hit.distance < nearestHit.hit.distance) {
-				if(i == 0) {
-					double texX = hit.hit.hitPoint.x;
-					double texZ = hit.hit.hitPoint.z;
-					boolean a = Math.sin(texX) > 0.0 ? true : false;
-					boolean b = Math.sin(texZ) > 0.0 ? true : false;
-					Vector color = a ^ b ? new Vector(1.0, 1.0, 1.0) : new Vector(0.0, 0.0, 0.0);
-					hit.material.color = color;
-				}
 				nearestHit = hit;
 			}
 		}
@@ -44,12 +37,12 @@ public class Pathtracer {
 	public static Vector traceRay(Ray ray, Scene scene, int bounces) {
 		
 		/* Terminate after too  many bounces. */
-		if(bounces > 5)
+		if(bounces > 3)
 			return new Vector(0.0, 0.0, 0.0);
 		
 		/* Trace ray. */
 		ObjectHit hit = getHit(ray, scene);
-		
+
 		if(hit.hit.hit) {
 			
 			/* Light emitted by the hit location. */
@@ -95,22 +88,24 @@ public class Pathtracer {
 			for(int y = 0; y < output.height; y++) {
 				
 				output.writePixel(x, y, new Vector(0.0, 255.0, 0.0));
-				
-				double worldX = ((double)x - output.width / 2.0) / output.width * camera.sensorSize;// + Math.random() * pixelWidth;
-				double worldY = ((double)y - output.height / 2.0) / output.height * camera.sensorSize;// + Math.random() * pixelHeight;
-						
-				Vector locDirection = new Vector(worldX, worldY, camera.focalLength);
-				
-				Vector w = camera.lookingAt;
-				Vector u = camera.lookingAt.cross(camera.up);
-				Vector v = camera.up;
-				
-				Vector direction = Transforms.localToWorldCoords(locDirection, u, v, w);
 
-				Ray primaryRay = new Ray(camera.position, direction);
 				Vector color = new Vector(0.0, 0.0, 0.0);
 				
 				for(int i = 0; i < NUM_PRIMARY_RAYS; i++) {
+
+					double worldX = ((double)x - output.width / 2.0) / output.width * camera.sensorSize + (Math.random() - 0.5) * pixelWidth;
+					double worldY = ((double)y - output.height / 2.0) / output.height * camera.sensorSize + (Math.random() - 0.5) * pixelHeight;
+							
+					Vector locDirection = new Vector(worldX, worldY, camera.focalLength);
+					
+					Vector w = camera.lookingAt;
+					Vector u = camera.lookingAt.cross(camera.up);
+					Vector v = camera.up;
+					
+					Vector direction = Transforms.localToWorldCoords(locDirection, u, v, w);
+
+					Ray primaryRay = new Ray(camera.position, direction);
+					
 					color = color.plus(traceRay(primaryRay, scene, 0));
 				}
 				
@@ -120,7 +115,6 @@ public class Pathtracer {
 				
 			}
 			
-			//System.out.println("Now on line " + x);
 		}
 		
 	}

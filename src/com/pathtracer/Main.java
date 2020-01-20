@@ -8,32 +8,29 @@ public class Main {
 	 * Entry point.
 	 */
 	public static void main(String[] args) {
-		
-		double angle = 90;
-		double radius = 20;
 	
 		/* Set up camera, scene, and output. */
 		Output output = new Output(256, 256);
 		
-		Camera camera = new Camera(1.0, 1.0, Vector.fromSpherical(angle, 90).times(radius), new Vector(), new Vector(0.0, 1.0, 0.0));
-		camera.lookingAt = new Vector(0.0, 0.0, 0.0).minus(camera.position).normalized();
-		
-		System.out.println(camera.position + " looking at " + camera.lookingAt);
-		
+		Camera camera = new Camera(1.0, 1.0, new Vector(0.0, 0.0, -1.0), new Vector(0.0, 0.0, 1.0), new Vector(0.0, 1.0, 0.0));
+
 		Scene scene = new Scene();
 		
 		/* Add objects to scene */
-		Mesh mesh = new Mesh(new File("garfield.obj"), 0.05, new Vector(0.0, -5.0, 0.0));
-		Plane plane = new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, -5.0, 0.0));
-		Circle circle = new Circle(new Vector(0.0, 1.0, 0.0), new Vector(0.0, 8.0, 0.0), 5.0);
+		Plane circle = new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, -3.0, 0.0));
+		Sphere sphere1 = new Sphere(new Vector(-2.0, 0.0, 3.0), 0.3);
+		Sphere sphere2 = new Sphere(new Vector(2.0, 0.0, 3.0), 0.3);
+		Mesh mesh = new Mesh(new File("StanfordBunny.obj"), 20, new Vector(0.35, -2.0, 5.0));
 		
-		Material diff = new Material(new Vector(1.0, 1.0, 1.0), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
-		Material mat = new Material(new Vector(1.0, 0.6, 0.0), new Vector(0.0, 0.0, 0.0), 0.5, 0.2);
-		Material source = new Material(new Vector(1.0, 1.0, 1.0), new Vector(1000.0, 1000.0, 1000.0), 1.0, 0.0);
+		Material mat = new Material(new Vector(1.0, 1.0, 1.0), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
+		Material src1 = new Material(new Vector(1.0, 1.0, 1.0), new Vector(1000.0, 500.0, 0.0), 1.0, 0.0);
+		Material src2 = new Material(new Vector(1.0, 1.0, 1.0), new Vector(0.0, 500.0, 1000.0), 1.0, 0.0);
+		Material mirr = new Material(new Vector(1.0, 1.0, 1.0), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
 		
-		scene.objects.add(new WorldObject(plane, diff));
-		scene.objects.add(new WorldObject(mesh, mat));
-		scene.objects.add(new WorldObject(circle, source));
+		scene.objects.add(new WorldObject(sphere1, src1));
+		scene.objects.add(new WorldObject(sphere2, src2));
+		scene.objects.add(new WorldObject(circle, mat));
+		scene.objects.add(new WorldObject(mesh, mirr));
 		
 		/* Start live preview. */
 		LivePreviewFrame frame = new LivePreviewFrame(output.image, 2);
