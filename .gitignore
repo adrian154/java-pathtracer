@@ -7,6 +7,9 @@
 *.psd
 *.jar
 *.txt
+*.obj
+*.jpg
+*.jpeg
 
 # Directories
 /bin/

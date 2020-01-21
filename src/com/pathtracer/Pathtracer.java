@@ -4,7 +4,7 @@ public class Pathtracer {
 
 	public static double MIN_DISTANCE = 0.001;
 	
-	public static int NUM_PRIMARY_RAYS = 6;
+	public static int NUM_PRIMARY_RAYS = 5;
 	public static int NUM_SECONDARY_RAYS = 2;
 
 	public static Vector ambient = new Vector(0.0, 0.0, 0.0);

@@ -22,19 +22,23 @@ public class Main {
 		Plane left = new Plane(new Vector(1.0, 0.0, 0.0), new Vector(-1.0, 0.0, 0.0));
 		Plane right = new Plane(new Vector(-1.0, 0.0, 0.0), new Vector(1.0, 0.0, 0.0));
 		
-		TexturedMesh mesh = new TexturedMesh(new File("Dog.obj"), 0.04, new Vector(0.0, -1.0, 1.5));
+		Sphere sph = new Sphere(new Vector(0.0, 0.0, 1.5), 0.5);
+		TexturedMaterial mat = new TexturedMaterial(TexturedMaterial.loadTexture("earth.jpg"), new Vector(0.0, 0.0, 0.0), 0.3, 0.5);
+		
+		Circle circle = new Circle(new Vector(0.0, -1.0, 0.0), new Vector(0.0, 1.4, 0.0), 0.75);
 		
 		Material white = new BasicMaterial(new Vector(1.0, 1.0, 1.0), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
-		Material mat = new BasicMaterial(new Vector(1.0, 1.0, 1.0), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
-		Material source = new BasicMaterial(new Vector(1.0, 1.0, 1.0), new Vector(100.0, 100.0, 100.0), 1.0, 0.0);
+		Material source = new BasicMaterial(new Vector(1.0, 1.0, 1.0), new Vector(1000.0, 1000.0, 1000.0), 1.0, 0.0);
 		
 		scene.objects.add(new WorldObject(front, white));
 		scene.objects.add(new WorldObject(rear, white));
-		scene.objects.add(new WorldObject(ceiling, source));
+		scene.objects.add(new WorldObject(ceiling, white));
 		scene.objects.add(new WorldObject(floor, white));
 		scene.objects.add(new WorldObject(left, white));
 		scene.objects.add(new WorldObject(right, white));
-		scene.objects.add(new WorldObject(mesh, mat));
+		scene.objects.add(new WorldObject(sph, mat));
+		
+		scene.objects.add(new WorldObject(circle, source));
 		
 		/* Start live preview. */
 		LivePreviewFrame frame = new LivePreviewFrame(output.image, 2);
