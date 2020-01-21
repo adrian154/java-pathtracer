@@ -6,7 +6,15 @@ A pathtracer written in Java.
 - Multithreaded rendering
 - Some geometric primitives (spheres, planes)
 - Mesh loading (limited OBJ support)
+- Textures (but not yet for meshes)
 - Live preview
+
+## Usage
+
+- `--primary-rays <number of primary rays>` - adjusts number of primary (eye) rays.
+- `--secondary-rays <number of secondary rays>` - ditto, for secondary rays.
+- `--nogui` - disables live preview.
+- `--threads <number of threads>` - controls number of threads for rendering.
 
 ## Gallery
 
