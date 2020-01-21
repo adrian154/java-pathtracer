@@ -1,4 +1,7 @@
-package com.pathtracer;
+package com.pathtracer.geometry;
+
+import com.pathtracer.Hit;
+import com.pathtracer.Pathtracer;
 
 /*
  * Sphere primitive.

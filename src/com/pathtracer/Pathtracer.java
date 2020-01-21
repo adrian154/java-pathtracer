@@ -1,10 +1,15 @@
  package com.pathtracer;
 
+import com.pathtracer.geometry.Ray;
+import com.pathtracer.geometry.Transforms;
+import com.pathtracer.geometry.Vector;
+import com.pathtracer.material.Material;
+
 public class Pathtracer {
 
 	public static double MIN_DISTANCE = 0.001;
 	
-	public static int NUM_PRIMARY_RAYS = 8;
+	public static int NUM_PRIMARY_RAYS = 12;
 	public static int NUM_SECONDARY_RAYS = 4;
 
 	public static Vector ambient = new Vector(0.0, 0.0, 0.0);

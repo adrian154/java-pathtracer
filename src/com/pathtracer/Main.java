@@ -2,6 +2,14 @@ package com.pathtracer;
 
 import java.io.File;
 
+import com.pathtracer.geometry.Circle;
+import com.pathtracer.geometry.Plane;
+import com.pathtracer.geometry.Sphere;
+import com.pathtracer.geometry.Vector;
+import com.pathtracer.material.BasicMaterial;
+import com.pathtracer.material.Material;
+import com.pathtracer.material.TexturedMaterial;
+
 public class Main {
 
 	/*

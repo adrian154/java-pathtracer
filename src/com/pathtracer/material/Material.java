@@ -1,4 +1,7 @@
-package com.pathtracer;
+package com.pathtracer.material;
+
+import com.pathtracer.geometry.Transforms;
+import com.pathtracer.geometry.Vector;
 
 /*
  * Material information.

@@ -1,4 +1,4 @@
-package com.pathtracer;
+package com.pathtracer.geometry;
 
 /*
  * Various transforms.

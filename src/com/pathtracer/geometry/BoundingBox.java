@@ -1,4 +1,4 @@
-package com.pathtracer;
+package com.pathtracer.geometry;
 
 /*
  * 3D axis aligned bounding box.

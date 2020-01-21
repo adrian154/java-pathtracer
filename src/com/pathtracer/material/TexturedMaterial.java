@@ -1,10 +1,12 @@
-package com.pathtracer;
+package com.pathtracer.material;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
+import com.pathtracer.geometry.Vector;
 
 public class TexturedMaterial implements Material {
 

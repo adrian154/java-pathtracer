@@ -1,5 +1,7 @@
 package com.pathtracer;
 
+import com.pathtracer.geometry.Vector;
+
 /*
  * Camera and camera information.
  */

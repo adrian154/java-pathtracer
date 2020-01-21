@@ -1,4 +1,6 @@
-package com.pathtracer;
+package com.pathtracer.material;
+
+import com.pathtracer.geometry.Vector;
 
 public class BasicMaterial implements Material {
 

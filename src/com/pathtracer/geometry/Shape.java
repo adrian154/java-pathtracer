@@ -1,4 +1,6 @@
-package com.pathtracer;
+package com.pathtracer.geometry;
+
+import com.pathtracer.Hit;
 
 /*
  * Shape; interface for geometric primitives/mesh objects

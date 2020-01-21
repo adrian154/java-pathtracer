@@ -1,5 +1,9 @@
 package com.pathtracer;
 
+import com.pathtracer.geometry.Ray;
+import com.pathtracer.geometry.Shape;
+import com.pathtracer.material.Material;
+
 /*
  * Object in the world. Has geometry and material.
  */

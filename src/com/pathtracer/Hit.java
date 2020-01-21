@@ -1,5 +1,7 @@
 package com.pathtracer;
 
+import com.pathtracer.geometry.Vector;
+
 /*
  * Information about a cast ray.
  */

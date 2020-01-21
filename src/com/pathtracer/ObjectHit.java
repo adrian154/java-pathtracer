@@ -1,5 +1,7 @@
 package com.pathtracer;
 
+import com.pathtracer.material.Material;
+
 /*
  * Object hit information. Contains material info.
  */
