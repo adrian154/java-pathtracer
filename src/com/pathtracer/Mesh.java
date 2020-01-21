@@ -297,7 +297,6 @@ public class Mesh implements Shape {
 		
 		/* Loop through triangles */
 		for(int i = 0; i < triangles.length; i++) {
-			Renderer.numTriangleTests++;
 			
 			Vector p1 = vertexes[this.triangles[triangles[i]][0] - 1];
 			Vector p2 = vertexes[this.triangles[triangles[i]][1] - 1];

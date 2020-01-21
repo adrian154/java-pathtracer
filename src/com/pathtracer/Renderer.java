@@ -5,25 +5,24 @@ import java.util.concurrent.Executors;
 
 public class Renderer {
 
-	public static int numThreads;
+	public static int numThreads = Runtime.getRuntime().availableProcessors();
 	public static int finishedThreads;
 	public static Output output;
 	public static ExecutorService executorService;
 	
 	public static long startTime;
 	
-	public static long numTriangleTests = 0;
-	
 	/*
 	 * Multithreaded render core.
 	 */
 	public static void startRender(Camera camera, Scene scene, Output output) {
 		
+		System.out.println("Rendering with settings primary-rays=" + Pathtracer.NUM_PRIMARY_RAYS + ", secondary-rays=" + Pathtracer.NUM_SECONDARY_RAYS + ", threads=" + Renderer.numThreads);
+		
 		/* Start timing */
 		startTime = System.currentTimeMillis();
 		
 		/* Set up renderer fields */
-		Renderer.numThreads = Runtime.getRuntime().availableProcessors();
 		Renderer.finishedThreads = 0;
 		Renderer.output = output;
 		
@@ -37,21 +36,7 @@ public class Renderer {
 			int start = linesPerCore * i;
 			int end = linesPerCore * (i + 1);
 	
-			executorService.execute(new Runnable() {
-
-				@Override
-				public void run() {
-					
-					/* Render assigned section */
-					Pathtracer.renderSection(camera,  scene, output, start, end);
-					
-					/* Check if all other threads are finished. */
-					Renderer.finishedThreads++;
-					Renderer.checkFinish();
-					
-				}
-				
-			});
+			executorService.execute(new RenderTask(camera, scene, output, start, end, i));
 		}
 		
 	}
@@ -70,7 +55,6 @@ public class Renderer {
 			/* Check timing */
 			long elapsed = System.currentTimeMillis() - startTime;
 			System.out.println("------------------- FINISHED IN " + elapsed + " MILLISECONDS -------------------");
-			System.out.println("Num. ray triangle tests: " + Renderer.numTriangleTests);
 			
 			/* Shut down executor service */
 			Renderer.executorService.shutdown();

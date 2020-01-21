@@ -4,8 +4,8 @@ public class Pathtracer {
 
 	public static double MIN_DISTANCE = 0.001;
 	
-	public static int NUM_PRIMARY_RAYS = 5;
-	public static int NUM_SECONDARY_RAYS = 2;
+	public static int NUM_PRIMARY_RAYS = 8;
+	public static int NUM_SECONDARY_RAYS = 4;
 
 	public static Vector ambient = new Vector(0.0, 0.0, 0.0);
 	
@@ -37,7 +37,7 @@ public class Pathtracer {
 	public static Vector traceRay(Ray ray, Scene scene, int bounces) {
 		
 		/* Terminate after too  many bounces. */
-		if(bounces > 3)
+		if(bounces > 2)
 			return new Vector(0.0, 0.0, 0.0);
 		
 		/* Trace ray. */

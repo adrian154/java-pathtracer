@@ -9,6 +9,20 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 	
+		boolean GUI = true;
+		
+		for(int i = 0; i < args.length; i++) {
+			if(args[i].equals("--primary-rays") || args[i].equals("-p") && i++ < args.length) {
+				Pathtracer.NUM_PRIMARY_RAYS = Integer.parseInt(args[i]);
+			} else if(args[i].equals("--secondary-rays") || args[i].equals("-s") && i++ < args.length) {
+				Pathtracer.NUM_SECONDARY_RAYS = Integer.parseInt(args[i]);
+			} else if(args[i].equals("--noGUI") || args[i].equals("-n")) {
+				GUI = false;
+			} else if(args[i].equals("--threads") || args[i].equals("t") && i++ < args.length) {
+				Renderer.numThreads = Integer.parseInt(args[i]);
+			}
+		}
+		
 		/* Set up camera, scene, and output. */
 		Output output = new Output(256, 256);
 		Camera camera = new Camera(60.0, new Vector(0.0, 0.0, -1.0), new Vector(0.0, 0.0, 1.0), new Vector(0.0, 1.0, 0.0));
@@ -23,7 +37,7 @@ public class Main {
 		Plane right = new Plane(new Vector(-1.0, 0.0, 0.0), new Vector(1.0, 0.0, 0.0));
 		
 		Sphere sph = new Sphere(new Vector(0.0, 0.0, 1.5), 0.5);
-		TexturedMaterial mat = new TexturedMaterial(TexturedMaterial.loadTexture("earth.jpg"), new Vector(0.0, 0.0, 0.0), 0.3, 0.5);
+		TexturedMaterial mat = new TexturedMaterial(TexturedMaterial.loadTexture("earth2.jpg"), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
 		
 		Circle circle = new Circle(new Vector(0.0, -1.0, 0.0), new Vector(0.0, 1.4, 0.0), 0.75);
 		
@@ -41,8 +55,10 @@ public class Main {
 		scene.objects.add(new WorldObject(circle, source));
 		
 		/* Start live preview. */
-		LivePreviewFrame frame = new LivePreviewFrame(output.image, 2);
-		frame.setVisible(true);
+		if(GUI) {
+			LivePreviewFrame frame = new LivePreviewFrame(output.image, 2);
+			frame.setVisible(true);
+		}
 		
 		/* Render. */
 		Renderer.startRender(camera, scene, output);
