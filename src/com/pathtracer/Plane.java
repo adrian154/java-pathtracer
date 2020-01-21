@@ -33,7 +33,10 @@ public class Plane implements Shape {
 		}
 		
 		Vector point = ray.point(distance);
-		return new Hit(true, point, distance, this.normal);
+		Vector u = this.normal.getOrthagonal();
+		Vector v = normal.cross(u);
+		
+		return new Hit(true, point, distance, this.normal, new Vector(u.dot(point), v.dot(point), 0.0));
 		
 	}
 	

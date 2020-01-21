@@ -45,10 +45,10 @@ public class TexturedMesh extends Mesh {
 					continue;
 				
 				/* Validate the line. */
-				if(parts[0].equals("vt") && parts.length != 2) {
-					System.out.println("error in \"" + file.getName() + "\" at line " + lineNum + ": wrong number of parameters for vertex (expected 2 but got " + parts.length + ")");
-					System.exit(1);
-				} else if(parts[0].equals("f") && parts.length < 4) {
+				//if(parts[0].equals("vt") && parts.length != 2) {
+				//	System.out.println("error in \"" + file.getName() + "\" at line " + lineNum + ": wrong number of parameters for vertex (expected 2 but got " + parts.length + ")");
+				//	System.exit(1);
+				/*} else */ if(parts[0].equals("f") && parts.length < 4) {
 					System.out.println("error in \"" + file.getName() + "\" at line " + lineNum + ": too few parameters for face (expected at least 4 but got " + parts.length + ")");
 					System.exit(1);
 				}
@@ -67,12 +67,16 @@ public class TexturedMesh extends Mesh {
 		
 					for(int vert = 0; vert < indexes.length; vert++) {
 						int strIndex = parts[vert + 1].indexOf('/');
+						
+						int strIndex2 = parts[vert + 1].indexOf('/', strIndex + 1);
+						strIndex2 = strIndex2 < 0 ? parts[vert + 1].length() : strIndex2;
+						
 						if(strIndex < 0) {
 							System.out.println("error in \"" + file.getName() + "\" at line " + lineNum + ": no texture coordinates for face.");
 							System.exit(1);
 						}
 						
-						indexes[vert] = Integer.parseInt(parts[vert + 1].substring(strIndex));
+						indexes[vert] = Integer.parseInt(parts[vert + 1].substring(strIndex + 1, strIndex2));
 					}
 					
 					for(int vert = 0; vert < indexes.length - 2; vert++) {

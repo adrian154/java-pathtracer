@@ -3,13 +3,12 @@ package com.pathtracer;
 /*
  * Object hit information. Contains material info.
  */
-public class ObjectHit {
+public class ObjectHit extends Hit {
 
-	public Hit hit;
 	public Material material;
 	
 	public ObjectHit(Hit hit, Material material) {
-		this.hit = hit;
+		super(hit.hit, hit.hitPoint, hit.distance, hit.normal, hit.textureCoordinates);
 		this.material = material;
 	}
 	

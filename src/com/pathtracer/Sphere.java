@@ -49,7 +49,12 @@ public class Sphere implements Shape {
 		Vector point = ray.point(distance);
 		Vector normal = point.minus(this.center).normalized();
 		
- 		return new Hit(true, point, distance, normal);
+		/* Map point to texture coordinate */
+		Vector d = new Vector(0.0, 0.0, 0.0).minus(normal);
+		double u = 0.5 + Math.atan2(d.z, d.x) / (2 * Math.PI);
+		double v = 0.5 - Math.asin(d.y) / Math.PI;
+		
+ 		return new Hit(true, point, distance, normal, new Vector(u, v, 0.0));
 		
 	}
 	

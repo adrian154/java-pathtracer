@@ -3,24 +3,13 @@ package com.pathtracer;
 /*
  * Material information.
  */
-public class Material {
+public interface Material {
 
-	public Vector color;
-	public Vector emissiveColor;
-	public double diffuseness;
-	public double glossiness;
-	
-	public Material() {
-		
-	}
-	
-	public Material(Vector color, Vector emissiveColor, double diffuseness, double glossiness) {
-		this.color = color;
-		this.emissiveColor = emissiveColor;
-		this.diffuseness = diffuseness;
-		this.glossiness = glossiness;
-	}
-	
+	public Vector getColor(double u, double v);
+	public Vector getEmission();
+	public double getDiffuseness();
+	public double getGlossiness();
+
 	/*
 	 * Static method. Get random diffuse vector.
 	 */

@@ -4,8 +4,8 @@ public class Pathtracer {
 
 	public static double MIN_DISTANCE = 0.001;
 	
-	public static int NUM_PRIMARY_RAYS = 10000;
-	public static int NUM_SECONDARY_RAYS = 6;
+	public static int NUM_PRIMARY_RAYS = 6;
+	public static int NUM_SECONDARY_RAYS = 2;
 
 	public static Vector ambient = new Vector(0.0, 0.0, 0.0);
 	
@@ -14,14 +14,14 @@ public class Pathtracer {
 	 */
 	public static ObjectHit getHit(Ray ray, Scene scene) {
 		
-		ObjectHit nearestHit = new ObjectHit(Hit.MISS, new Material());
+		ObjectHit nearestHit = new ObjectHit(Hit.MISS, null);
 		
 		for(int i = 0; i < scene.objects.size(); i++) {
 			WorldObject object = scene.objects.get(i);
 			
-			ObjectHit hit = object.intersect(ray);
+			ObjectHit hit = new ObjectHit(object.intersect(ray), object.material);
 			
-			if(hit.hit.hit && hit.hit.distance < nearestHit.hit.distance) {
+			if(hit.hit && hit.distance < nearestHit.distance) {
 				nearestHit = hit;
 			}
 		}
@@ -43,10 +43,10 @@ public class Pathtracer {
 		/* Trace ray. */
 		ObjectHit hit = getHit(ray, scene);
 
-		if(hit.hit.hit) {
+		if(hit.hit) {
 			
 			/* Light emitted by the hit location. */
-			Vector color = hit.material.emissiveColor;
+			Vector color = hit.material.getEmission();
 			
 			/* Light going into the hit location. */
 			Vector incoming = new Vector(0.0, 0.0, 0.0);
@@ -55,19 +55,20 @@ public class Pathtracer {
 			for(int i = 0; i < NUM_SECONDARY_RAYS; i++) {
 				Vector newDirection;
 				
-				if(Math.random() < hit.material.diffuseness) {
-					newDirection = Material.getDiffuseVector(hit.hit.normal);
+				if(Math.random() < hit.material.getDiffuseness()) {
+					newDirection = Material.getDiffuseVector(hit.normal);
 				} else {
-					newDirection = Material.getReflectionVector(hit.hit.normal, ray.direction, hit.material.glossiness);
+					newDirection = Material.getReflectionVector(hit.normal, ray.direction, hit.material.getGlossiness());
 				}
 				
-				Ray newRay = new Ray(hit.hit.hitPoint, newDirection);
-				incoming = incoming.plus(traceRay(newRay, scene, bounces + 1)).times(newDirection.dot(hit.hit.normal));
+				Ray newRay = new Ray(hit.hitPoint, newDirection);
+				
+				incoming = incoming.plus(traceRay(newRay, scene, bounces + 1)).times(newDirection.dot(hit.normal));
 			}
 			
-			incoming = incoming.divBy(NUM_SECONDARY_RAYS).times(hit.material.color);
-		
+			incoming = incoming.divBy(NUM_SECONDARY_RAYS).times(hit.material.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y));
 			return color.plus(incoming);
+			
 		} else {
 			
 			/* If the ray missed return the ambient color. */
@@ -81,8 +82,8 @@ public class Pathtracer {
 	 */
 	public static void renderSection(Camera camera, Scene scene, Output output, int start, int end) {
 		
-		double pixelWidth = camera.sensorSize / output.width;
-		double pixelHeight = camera.sensorSize / output.height;
+		double pixelWidth = 1.0 / output.width;
+		double pixelHeight = 1.0 / output.height;
 		
 		for(int x = start; x < end; x++) {
 			for(int y = 0; y < output.height; y++) {
@@ -93,8 +94,8 @@ public class Pathtracer {
 				
 				for(int i = 0; i < NUM_PRIMARY_RAYS; i++) {
 
-					double worldX = ((double)x - output.width / 2.0) / output.width * camera.sensorSize + (Math.random() - 0.5) * pixelWidth;
-					double worldY = ((double)y - output.height / 2.0) / output.height * camera.sensorSize + (Math.random() - 0.5) * pixelHeight;
+					double worldX = ((double)x - output.width / 2.0) / output.width + (Math.random() - 0.5) * pixelWidth;
+					double worldY = ((double)y - output.height / 2.0) / output.height + (Math.random() - 0.5) * pixelHeight;
 							
 					Vector locDirection = new Vector(worldX, worldY, camera.focalLength);
 					
@@ -109,8 +110,7 @@ public class Pathtracer {
 					color = color.plus(traceRay(primaryRay, scene, 0));
 				}
 				
-				color.divBy(NUM_PRIMARY_RAYS * 1000);
-				System.out.println(color);
+				color.divBy(NUM_PRIMARY_RAYS);
 				
 				output.writePixel(x, y, color);
 				
