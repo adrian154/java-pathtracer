@@ -20,8 +20,8 @@ A pathtracer written in Java.
 
 ![image](https://i.imgur.com/7pwz5Uq.png)
 
+![image](https://i.imgur.com/pNEzsmA.png)
+
 ![image](https://i.imgur.com/T6QSeCB.gif)
 
 ![image](https://i.imgur.com/8GLaNmy.png)
-
-![image](https://i.imgur.com/l5uYZDX.png)
