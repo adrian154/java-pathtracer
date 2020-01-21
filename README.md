@@ -6,6 +6,7 @@ A pathtracer written in Java.
 - Multithreaded rendering
 - Some geometric primitives (spheres, planes)
 - Mesh loading (limited OBJ support)
+- Textures (but not yet for meshes)
 - Live preview
 
 ## Usage
