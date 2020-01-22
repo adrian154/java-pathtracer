@@ -80,8 +80,7 @@ public class Vector {
 	}
 	
 	public String toString() {
-		DecimalFormat f = new DecimalFormat("#.#");
-		return new String("(" + f.format(this.x) + ", " + f.format(this.y) + ", " + f.format(this.z) + ")");
+		return new String("(" + this.x + ", " + this.y + ", " + this.z + ")");
 	}
 	
 	public static Vector randomInHemisphere() {

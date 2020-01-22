@@ -9,10 +9,10 @@ public class Pathtracer {
 
 	public static double MIN_DISTANCE = 0.001;
 	
-	public static int NUM_PRIMARY_RAYS = 12;
-	public static int NUM_SECONDARY_RAYS = 4;
+	public static int NUM_PRIMARY_RAYS = 10000;
+	public static int NUM_SECONDARY_RAYS = 3;
 
-	public static Vector ambient = new Vector(0.0, 0.0, 0.0);
+	public static Material skyMaterial;
 	
 	/*
 	 * Trace actual ray.
@@ -42,7 +42,7 @@ public class Pathtracer {
 	public static Vector traceRay(Ray ray, Scene scene, int bounces) {
 		
 		/* Terminate after too  many bounces. */
-		if(bounces > 2)
+		if(bounces > 3)
 			return new Vector(0.0, 0.0, 0.0);
 		
 		/* Trace ray. */
@@ -77,7 +77,12 @@ public class Pathtracer {
 		} else {
 			
 			/* If the ray missed return the ambient color. */
-			return ambient;
+			Vector d = new Vector(0.0, 0.0, 0.0).minus(ray.direction);
+			double u = 0.5 + Math.atan2(d.z, d.x) / (2 * Math.PI);
+			double v = 0.5 - Math.asin(d.y) / Math.PI;
+			
+			return bounces == 0 ? skyMaterial.getColor(u, v).times(260) : new Vector(650.0, 650.0, 600.0);
+			
 		}
 		
 	}
@@ -115,7 +120,9 @@ public class Pathtracer {
 					color = color.plus(traceRay(primaryRay, scene, 0));
 				}
 				
-				color.divBy(NUM_PRIMARY_RAYS);
+				color = color.divBy(NUM_PRIMARY_RAYS);
+				
+				//System.out.println("x: " + x + ", y: " + y + ", color: " + color.toString());
 				
 				output.writePixel(x, y, color);
 				

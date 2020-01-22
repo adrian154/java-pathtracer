@@ -24,8 +24,8 @@ public class TexturedMaterial implements Material {
 	
 	public Vector getColor(double u, double v) {
 		
-		int x = (int)Math.floor(u * texture.getWidth());
-		int y = texture.getHeight() - (int)Math.floor(v * texture.getHeight()) - 1;
+		int x = Math.max(Math.min((int)Math.round(u * texture.getWidth()), texture.getWidth() - 1), 0);
+		int y = Math.max(Math.min(texture.getHeight() - (int)Math.round(Math.floor(v * texture.getHeight())), texture.getHeight() - 1), 0);
 		int color =  texture.getRGB(x, y);
 		int r = (color >> 16) & 0xFF;
 		int g = (color >> 8) & 0xFF;
