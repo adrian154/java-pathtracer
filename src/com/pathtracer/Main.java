@@ -19,15 +19,20 @@ public class Main {
 	
 		boolean GUI = true;
 		
+		int numPrimaryRays = 8;
+		int numSecondaryRays = 2;
+		int numThreads;
+		
+		/* Reads command-line arguments */
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].equals("--primary-rays") || args[i].equals("-p") && i++ < args.length) {
-				Pathtracer.NUM_PRIMARY_RAYS = Integer.parseInt(args[i]);
+				numPrimaryRays = Integer.parseInt(args[i]);
 			} else if(args[i].equals("--secondary-rays") || args[i].equals("-s") && i++ < args.length) {
-				Pathtracer.NUM_SECONDARY_RAYS = Integer.parseInt(args[i]);
+				numSecondaryRays = Integer.parseInt(args[i]);
 			} else if(args[i].equals("--noGUI") || args[i].equals("-n")) {
 				GUI = false;
 			} else if(args[i].equals("--threads") || args[i].equals("t") && i++ < args.length) {
-				Renderer.numThreads = Integer.parseInt(args[i]);
+				numThreads = Integer.parseInt(args[i]);
 			}
 		}
 		
@@ -35,12 +40,13 @@ public class Main {
 		Output output = new Output(512, 512);
 		Camera camera = new Camera(60.0, new Vector(0.0, 0.0, -1.0), new Vector(0.0, 0.0, 1.0), new Vector(0.0, 1.0, 0.0));
 		Scene scene = new Scene();
+		Pathtracer pathtracer = new Pathtracer(numPrimaryRays, numSecondaryRays, scene, camera);
 		
 		/* Add objects to scene */
 		Plane floor = new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, -1.0, 0.0));
 		TexturedMaterial mat = new TexturedMaterial(TexturedMaterial.loadTexture("obama.jpg"), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
 		
-		Pathtracer.skyMaterial = new TexturedMaterial(TexturedMaterial.loadTexture("sky3.jpg"), new Vector(50.0, 50.0, 50.0), 1.0, 0.0);
+		pathtracer.skyMaterial = new TexturedMaterial(TexturedMaterial.loadTexture("sky3.jpg"), new Vector(50.0, 50.0, 50.0), 1.0, 0.0);
 		
 		Sphere earth = new Sphere(new Vector(-0.5, 0.0, 2.0), 1.0);
 		TexturedMaterial earthmat = new TexturedMaterial(TexturedMaterial.loadTexture("earth3.jpg"), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
@@ -61,7 +67,8 @@ public class Main {
 		}
 		
 		/* Render. */
-		Renderer.startRender(camera, scene, output);
+		Renderer renderer = new Renderer(pathtracer, output);
+		renderer.startRender();
 		
 	}
 	

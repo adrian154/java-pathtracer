@@ -3,21 +3,40 @@
 import com.pathtracer.geometry.Ray;
 import com.pathtracer.geometry.Transforms;
 import com.pathtracer.geometry.Vector;
+import com.pathtracer.material.BasicMaterial;
 import com.pathtracer.material.Material;
 
 public class Pathtracer {
 
-	public static double MIN_DISTANCE = 0.001;
+	public static double MIN_DISTANCE = 0.0001;
 	
-	public static int NUM_PRIMARY_RAYS = 10000;
-	public static int NUM_SECONDARY_RAYS = 3;
-
-	public static Material skyMaterial;
+	public int numPrimaryRays;
+	public int numSecondaryRays;
+	
+	public Material skyMaterial;
+	public Scene scene;
+	public Camera camera;
+	
+	public Pathtracer(int numPrimaryRays, int numSecondaryRays, Scene scene, Camera camera) {
+		this.numPrimaryRays = numPrimaryRays;
+		this.numSecondaryRays = numSecondaryRays;
+		this.scene = scene;
+		this.camera = camera;
+		this.skyMaterial = new BasicMaterial(new Vector(0.0, 0.0, 0.0), new Vector(0.0, 0.0, 0.0), 0.0, 0.0);
+	}
+	
+	public Pathtracer(int numPrimaryRays, int numSecondaryRays, Scene scene, Camera camera, Material skyMaterial) {
+		this.numPrimaryRays = numPrimaryRays;
+		this.numSecondaryRays = numSecondaryRays;
+		this.scene = scene;
+		this.camera = camera;
+		this.skyMaterial = skyMaterial;
+	}
 	
 	/*
 	 * Trace actual ray.
 	 */
-	public static ObjectHit getHit(Ray ray, Scene scene) {
+	public ObjectHit getHit(Ray ray) {
 		
 		ObjectHit nearestHit = new ObjectHit(Hit.MISS, null);
 		
@@ -39,14 +58,14 @@ public class Pathtracer {
 	 * traceRay: Solves rendering equation numerically with Monte Carlo method.
 	 * Returns color as vector.
 	 */
-	public static Vector traceRay(Ray ray, Scene scene, int bounces) {
+	public Vector traceRay(Ray ray, int bounces) {
 		
 		/* Terminate after too  many bounces. */
 		if(bounces > 3)
 			return new Vector(0.0, 0.0, 0.0);
 		
 		/* Trace ray. */
-		ObjectHit hit = getHit(ray, scene);
+		ObjectHit hit = getHit(ray);
 
 		if(hit.hit) {
 			
@@ -57,7 +76,7 @@ public class Pathtracer {
 			Vector incoming = new Vector(0.0, 0.0, 0.0);
 			
 			/* Do secondary rays. */
-			for(int i = 0; i < NUM_SECONDARY_RAYS; i++) {
+			for(int i = 0; i < this.numSecondaryRays; i++) {
 				Vector newDirection;
 				
 				if(Math.random() < hit.material.getDiffuseness()) {
@@ -68,10 +87,10 @@ public class Pathtracer {
 				
 				Ray newRay = new Ray(hit.hitPoint, newDirection);
 				
-				incoming = incoming.plus(traceRay(newRay, scene, bounces + 1)).times(newDirection.dot(hit.normal));
+				incoming = incoming.plus(traceRay(newRay, bounces + 1)).times(newDirection.dot(hit.normal));
 			}
 			
-			incoming = incoming.divBy(NUM_SECONDARY_RAYS).times(hit.material.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y));
+			incoming = incoming.divBy(this.numSecondaryRays).times(hit.material.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y));
 			return color.plus(incoming);
 			
 		} else {
@@ -90,7 +109,7 @@ public class Pathtracer {
 	/*
 	 * Render a scene.
 	 */
-	public static void renderSection(Camera camera, Scene scene, Output output, int start, int end) {
+	public void renderSection(Output output, int start, int end) {
 		
 		double pixelWidth = 1.0 / output.width;
 		double pixelHeight = 1.0 / output.height;
@@ -102,7 +121,7 @@ public class Pathtracer {
 
 				Vector color = new Vector(0.0, 0.0, 0.0);
 				
-				for(int i = 0; i < NUM_PRIMARY_RAYS; i++) {
+				for(int i = 0; i < this.numPrimaryRays; i++) {
 
 					double worldX = ((double)x - output.width / 2.0) / output.width + (Math.random() - 0.5) * pixelWidth;
 					double worldY = ((double)y - output.height / 2.0) / output.height + (Math.random() - 0.5) * pixelHeight;
@@ -117,13 +136,11 @@ public class Pathtracer {
 
 					Ray primaryRay = new Ray(camera.position, direction);
 
-					color = color.plus(traceRay(primaryRay, scene, 0));
+					color = color.plus(traceRay(primaryRay, 0));
 				}
 				
-				color = color.divBy(NUM_PRIMARY_RAYS);
-				
-				//System.out.println("x: " + x + ", y: " + y + ", color: " + color.toString());
-				
+				color = color.divBy(this.numPrimaryRays);
+	
 				output.writePixel(x, y, color);
 				
 			}

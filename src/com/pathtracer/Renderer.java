@@ -5,38 +5,40 @@ import java.util.concurrent.Executors;
 
 public class Renderer {
 
-	public static int numThreads = Runtime.getRuntime().availableProcessors();
-	public static int finishedThreads;
-	public static Output output;
-	public static ExecutorService executorService;
+	public int numThreads;
+	public int finishedThreads;
+	public ExecutorService executorService;
+	
+	public Pathtracer pathtracer;
+	public Output output;
 	
 	public static long startTime;
 	
-	/*
-	 * Multithreaded render core.
-	 */
-	public static void startRender(Camera camera, Scene scene, Output output) {
+	public Renderer(Pathtracer pathtracer, Output output) {
+	
+		this.pathtracer = pathtracer;
+		this.output = output;
 		
-		System.out.println("Rendering with settings primary-rays=" + Pathtracer.NUM_PRIMARY_RAYS + ", secondary-rays=" + Pathtracer.NUM_SECONDARY_RAYS + ", threads=" + Renderer.numThreads);
+		this.numThreads = Runtime.getRuntime().availableProcessors();
 		
-		/* Start timing */
-		startTime = System.currentTimeMillis();
+	}
+	
+	public void startRender() {
+	
+		System.out.println("Rendering with settings primary-rays=" + this.pathtracer.numPrimaryRays + ", secondary-rays=" + this.pathtracer.numSecondaryRays + ", threads=" + this.numThreads);
 		
-		/* Set up renderer fields */
-		Renderer.finishedThreads = 0;
-		Renderer.output = output;
-		
-		/* Set up thread pool. */
+		this.finishedThreads = 0;
 		executorService = Executors.newFixedThreadPool(numThreads);
 		
-		/* Divide work between threads. */
 		int linesPerCore = output.width / numThreads;
 		
-		for(int i = 0 ; i < numThreads; i++) {
+		startTime = System.currentTimeMillis();
+		
+		for(int i = 0; i < numThreads; i++) {
 			int start = linesPerCore * i;
 			int end = linesPerCore * (i + 1);
-	
-			executorService.execute(new RenderTask(camera, scene, output, start, end, i));
+			
+			executorService.execute(new RenderTask(this, start, end));
 		}
 		
 	}
@@ -44,7 +46,7 @@ public class Renderer {
 	/*
 	 * If all the threads are done, write result to image.
 	 */
-	public static void checkFinish() {
+	public void checkFinish() {
 		
 		/* Check if all threads are done */
 		if(finishedThreads == numThreads) {
@@ -54,10 +56,10 @@ public class Renderer {
 			
 			/* Check timing */
 			long elapsed = System.currentTimeMillis() - startTime;
-			System.out.println("------------------- FINISHED IN " + elapsed + " MILLISECONDS -------------------");
+			System.out.println("Finished in " + elapsed + " milliseconds.");
 			
 			/* Shut down executor service */
-			Renderer.executorService.shutdown();
+			executorService.shutdown();
 			
 		}
 	}
