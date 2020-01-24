@@ -10,10 +10,18 @@ public class Plane implements Shape {
 
 	public Vector normal;
 	public Vector point;
+	public double tilingSize;
 	
 	public Plane(Vector normal, Vector point) {
 		this.normal = normal;
 		this.point = point;
+		this.tilingSize = 1.0;
+	}
+	
+	public Plane(Vector normal, Vector point, double tilingSize) {
+		this.normal = normal;
+		this.point = point;
+		this.tilingSize = tilingSize;
 	}
 	
 	/*
@@ -36,10 +44,15 @@ public class Plane implements Shape {
 		}
 		
 		Vector point = ray.point(distance);
-		Vector u = normal.getOrthagonal();
-		Vector v = normal.cross(u);
 		
-		return new Hit(true, point, distance, this.normal, new Vector(u.dot(point), v.dot(point), 0.0));
+		Vector vec = point.minus(this.point);
+		Vector ortho = normal.getOrthagonal();
+		double u = ortho.dot(vec);
+		double v = normal.cross(ortho).dot(vec);
+		u = u - Math.floor(u / this.tilingSize) * this.tilingSize;
+		v = v - Math.floor(v / this.tilingSize) * this.tilingSize;
+		
+		return new Hit(true, point, distance, this.normal, new Vector(u / this.tilingSize, v / this.tilingSize, 0.0));
 		
 	}
 	

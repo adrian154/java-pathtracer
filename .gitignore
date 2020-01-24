@@ -10,6 +10,7 @@
 *.obj
 *.jpg
 *.jpeg
+*.hdr
 
 # Directories
 /bin/

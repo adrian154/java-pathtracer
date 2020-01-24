@@ -1,8 +1,5 @@
 package com.pathtracer;
 
-import java.io.File;
-
-import com.pathtracer.geometry.Circle;
 import com.pathtracer.geometry.Plane;
 import com.pathtracer.geometry.Sphere;
 import com.pathtracer.geometry.Vector;
@@ -19,9 +16,9 @@ public class Main {
 	
 		boolean GUI = true;
 		
-		int numPrimaryRays = 8;
+		int numPrimaryRays = 10;
 		int numSecondaryRays = 2;
-		int numThreads;
+		int numThreads = Runtime.getRuntime().availableProcessors();
 		
 		/* Reads command-line arguments */
 		for(int i = 0; i < args.length; i++) {
@@ -37,28 +34,22 @@ public class Main {
 		}
 		
 		/* Set up camera, scene, and output. */
-		Output output = new Output(512, 512);
-		Camera camera = new Camera(60.0, new Vector(0.0, 0.0, -1.0), new Vector(0.0, 0.0, 1.0), new Vector(0.0, 1.0, 0.0));
+		Output output = new Output(256, 256);
+		Camera camera = new Camera(60.0, new Vector(0.0, 2.0, 0.0), new Vector(0.0, 0.0, 1.0), new Vector(0.0, 1.0, 0.0));
 		Scene scene = new Scene();
 		Pathtracer pathtracer = new Pathtracer(numPrimaryRays, numSecondaryRays, scene, camera);
 		
-		/* Add objects to scene */
-		Plane floor = new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, -1.0, 0.0));
-		TexturedMaterial mat = new TexturedMaterial(TexturedMaterial.loadTexture("obama.jpg"), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
+		/* Add objects to scene */	
+		Plane floor = new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, 0.0, 0.0), 2.0);
+		Material textured = new TexturedMaterial(TexturedMaterial.loadTexture("obama.jpg"), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
 		
-		pathtracer.skyMaterial = new TexturedMaterial(TexturedMaterial.loadTexture("sky3.jpg"), new Vector(50.0, 50.0, 50.0), 1.0, 0.0);
+		Sphere sphere = new Sphere(new Vector(0.0, 1.3, 7.0), 1.3);
+		Material mirror = new BasicMaterial(new Vector(1.0, 1.0, 1.0), new Vector(0.0, 0.0, 0.0), 0.0, 0.0);
 		
-		Sphere earth = new Sphere(new Vector(-0.5, 0.0, 2.0), 1.0);
-		TexturedMaterial earthmat = new TexturedMaterial(TexturedMaterial.loadTexture("earth3.jpg"), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
+		pathtracer.skyMaterial = new TexturedMaterial(TexturedMaterial.loadTexture("sky_test.jpg"), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
 		
-		Sphere mars = new Sphere(new Vector(0.5, -0.5, 2.0), 0.5);
-		TexturedMaterial marsmat = new TexturedMaterial(TexturedMaterial.loadTexture("mars2.jpg"), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
-
-		Material white = new BasicMaterial(new Vector(1.0, 1.0, 1.0), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
-		
-		scene.objects.add(new WorldObject(floor, white));
-		scene.objects.add(new WorldObject(earth, earthmat));
-		scene.objects.add(new WorldObject(mars, marsmat));
+		scene.objects.add(new WorldObject(floor, textured));
+		scene.objects.add(new WorldObject(sphere, mirror));
 		
 		/* Start live preview. */
 		if(GUI) {

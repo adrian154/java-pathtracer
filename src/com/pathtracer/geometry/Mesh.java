@@ -23,7 +23,7 @@ public class Mesh implements Shape {
 	public OctreeBoundingBox octree;
 	
 	/* Static field - octree level, for mesh construction. */
-	public static int OCTREE_LEVEL = 2;
+	public static int OCTREE_LEVEL = 3;
 	
 	/* Constructor -  load mesh. */
 	public Mesh(File file, double scale, Vector offset) {

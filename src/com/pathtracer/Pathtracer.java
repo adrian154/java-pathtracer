@@ -100,7 +100,7 @@ public class Pathtracer {
 			double u = 0.5 + Math.atan2(d.z, d.x) / (2 * Math.PI);
 			double v = 0.5 - Math.asin(d.y) / Math.PI;
 			
-			return bounces == 0 ? skyMaterial.getColor(u, v).times(260) : new Vector(650.0, 650.0, 600.0);
+			return skyMaterial.getColor(u, v).times(255);
 			
 		}
 		
@@ -141,6 +141,49 @@ public class Pathtracer {
 				
 				color = color.divBy(this.numPrimaryRays);
 	
+				output.writePixel(x, y, color);
+				
+			}
+			
+		}
+		
+	}
+	
+	/*
+	 * Test
+	 */
+	public void renderSectionFlat(Output output, int start, int end) {
+		
+		double pixelWidth = 1.0 / output.width;
+		double pixelHeight = 1.0 / output.height;
+		
+		for(int x = start; x < end; x++) {
+			for(int y = 0; y < output.height; y++) {
+				
+				output.writePixel(x, y, new Vector(0.0, 255.0, 0.0));
+				
+				Vector color = new Vector(0.0, 0.0, 0.0);
+				
+				for(int i = 0; i < 10; i++) {
+					double worldX = ((double)x - output.width / 2.0) / output.width + (Math.random() - 0.5) * pixelWidth;
+					double worldY = ((double)y - output.height / 2.0) / output.height + (Math.random() - 0.5) * pixelHeight;
+							
+					Vector locDirection = new Vector(worldX, worldY, camera.focalLength);
+					
+					Vector w = camera.lookingAt;
+					Vector u = camera.lookingAt.cross(camera.up);
+					Vector v = camera.up;
+					
+					Vector direction = Transforms.localToWorldCoords(locDirection, u, v, w);
+					Ray primaryRay = new Ray(camera.position, direction);
+					
+					ObjectHit hit = getHit(primaryRay);
+					if(hit.hit) {
+						color = color.plus(hit.material.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y).times(255.0));
+					}
+				}
+			
+				color = color.divBy(10.0);
 				output.writePixel(x, y, color);
 				
 			}
