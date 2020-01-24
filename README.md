@@ -1,6 +1,8 @@
 # java-pathtracer
 A pathtracer written in Java.
 
+[JavaHDR](https://github.com/Ivelate/JavaHDR) code by Victor Arellano.
+
 ## Features
 - Unbiased Monte Carlo pathtracing
 - Multithreaded rendering
