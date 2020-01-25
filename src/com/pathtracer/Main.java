@@ -1,11 +1,12 @@
 package com.pathtracer;
 
-import com.JavaHDR.HDRImageRGB;
+import java.io.File;
+
+import com.pathtracer.geometry.Circle;
+import com.pathtracer.geometry.Mesh;
 import com.pathtracer.geometry.Plane;
-import com.pathtracer.geometry.Sphere;
 import com.pathtracer.geometry.Vector;
 import com.pathtracer.material.BasicMaterial;
-import com.pathtracer.material.HDRMaterial;
 import com.pathtracer.material.Material;
 import com.pathtracer.material.TexturedMaterial;
 
@@ -18,8 +19,8 @@ public class Main {
 	
 		boolean GUI = true;
 		
-		int numPrimaryRays = 10;
-		int numSecondaryRays = 10;
+		int numPrimaryRays = 32;
+		int numSecondaryRays = 6;
 		int numThreads = Runtime.getRuntime().availableProcessors();
 		
 		/* Reads command-line arguments */
@@ -36,27 +37,30 @@ public class Main {
 		}
 		
 		/* Set up camera, scene, and output. */
-		Output output = new Output(256, 256);
-		Camera camera = new Camera(60.0, new Vector(0.0, 2.0, 0.0), new Vector(0.0, 0.0, 1.0), new Vector(0.0, 1.0, 0.0));
+		Output output = new Output(1024, 1024);
+		Camera camera = new Camera(60.0, new Vector(0.0, 0.0, -10.0), new Vector(0.0, 0.0, 1.0), new Vector(0.0, 1.0, 0.0));
 		Scene scene = new Scene();
 		Pathtracer pathtracer = new Pathtracer(numPrimaryRays, numSecondaryRays, scene, camera);
 		
 		/* Add objects to scene */	
-		Plane floor = new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, 0.0, 0.0), 2.0);
-		Material white = new BasicMaterial(new Vector(1.0, 1.0, 1.0), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
-		Material textured = new TexturedMaterial(TexturedMaterial.loadTexture("obama.jpg"), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
+		Material teapotMat = new BasicMaterial(new Vector(0.0, 1.0, 0.0), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
+		Mesh teapotGeom = new Mesh(new File("UtahTeapot.obj"), 1.0, new Vector(0.0, -2.0, 0.0));
 		
-		Sphere sphere = new Sphere(new Vector(0.0, 1.3, 7.0), 1.3);
-		Material mirror = new BasicMaterial(new Vector(1.0, 1.0, 1.0), new Vector(0.0, 0.0, 0.0), 0.0, 0.0);
+		Material lightMat = new BasicMaterial(new Vector(1.0, 1.0, 1.0), new Vector(1.0, 1.0, 1.0).times(10000.0), 1.0, 0.0);
+		Circle lightGeom = new Circle(new Vector(0.0, -1.0, 0.0), new Vector(0.0, 3.0, 0.0), 2.0);
 		
-		pathtracer.skyMaterial = new HDRMaterial((HDRImageRGB)HDRMaterial.loadTexture("derelict_overpass_1k.hdr"), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
+		Material floorMat = new TexturedMaterial(TexturedMaterial.loadTexture("obama.jpg"), new Vector(0.0, 0.0, 0.0), 1.0, 0.0);
+		Plane floorGeom = new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, -2.0, 0.0), 7.0);
 		
-		//scene.objects.add(new WorldObject(floor, white));
-		scene.objects.add(new WorldObject(sphere, white));
+		pathtracer.skyMaterial = new BasicMaterial(new Vector(0.0, 0.0, 0.0), new Vector(0.0, 0.0, 0.0), 0.0, 0.0);
+		
+		scene.objects.add(new WorldObject(teapotGeom, teapotMat));
+		scene.objects.add(new WorldObject(lightGeom, lightMat));
+		scene.objects.add(new WorldObject(floorGeom, floorMat));
 		
 		/* Start live preview. */
 		if(GUI) {
-			LivePreviewFrame frame = new LivePreviewFrame(output.image, 2);
+			LivePreviewFrame frame = new LivePreviewFrame(output.image, 1);
 			frame.setVisible(true);
 		}
 		
