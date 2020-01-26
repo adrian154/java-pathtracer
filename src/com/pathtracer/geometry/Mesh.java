@@ -143,7 +143,24 @@ public class Mesh implements Shape {
 			Vector v3 = vertexes[triangle[2] - 1];
 			
 			if(box.contains(v1) || box.contains(v2) || box.contains(v3)) {
+				
+				/* If the box contains one of the triangle's vertices, right off the bat it can be added. */
 				triangles.add(i);
+				
+			} else {
+				
+				/* Otherwise, check each edge. */
+				Vector edge1 = v2.minus(v1);			/* v1 to v2 */
+				Vector edge2 = v3.minus(v2);			/* v2 to v3 */
+				Vector edge3 = v1.minus(v3);			/* V3 to v1 */
+				double l1 = box.intersectDistance(new Ray(v1, edge1));
+				double l2 = box.intersectDistance(new Ray(v2, edge2));
+				double l3 = box.intersectDistance(new Ray(v3, edge3));
+				
+				if(l1 * l1 < edge1.lengthSquared() || l2 * l2 < edge2.lengthSquared() || l3 * l3 < edge3.lengthSquared()) {
+					triangles.add(i);
+				}
+				
 			}
 		}
 		
@@ -230,11 +247,11 @@ public class Mesh implements Shape {
 			OctreeBoundingBox subbox = boxes[i];
 
 			/* If there are triangles in the box, */
-			if(hasTrianglesInBoundingBox(subbox)) {
+			int containedTriangles[] = getTrianglesInBoundingBox(subbox);
+			if(containedTriangles.length > 0) {
 				
 				/* If it's a terminal node attach the triangles. */
 				if(level == Mesh.OCTREE_LEVEL) {
-					int containedTriangles[] = getTrianglesInBoundingBox(subbox);
 					subbox.containedTriangles = containedTriangles;
 					subbox.isTerminal = true;
 				} else {
@@ -296,7 +313,6 @@ public class Mesh implements Shape {
 		
 		/* Terminal box: iterate through triangles. */
 		if(box.isTerminal) {
-			//return intersect(ray, box.containedTriangles);
 			/* Return bogus vector */
 			return new Hit(true, new Vector(0.0, 0.0, 0.0), 0.1, new Vector(0.0, 0.0, -1.0), new Vector(0.0, 0.0, 0.0));
 		}

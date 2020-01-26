@@ -22,6 +22,10 @@ public class BoundingBox {
 	 * Checks if a ray intersects with the bounding box.
 	 */
 	public boolean doesIntersect(Ray ray) {
+		return intersectDistance(ray) == Double.POSITIVE_INFINITY ? false : true;
+	}
+	
+	public double intersectDistance(Ray ray) {
 		
 		/* Intersections with all 6 AABB planes */
 		double xmin = (min.x - ray.origin.x) / ray.direction.x;
@@ -39,16 +43,16 @@ public class BoundingBox {
 	
 		/* Negative: AABB is behind the ray. */
 		if(tmax < Pathtracer.MIN_DISTANCE) {
-			return false;
+			return Double.POSITIVE_INFINITY;
 		}
 		
 		/* Minimum distance greater than maximum: No intersection. */
 		if(tmin > tmax) {
-			return false;
+			return Double.POSITIVE_INFINITY;
 		}
 		
 		/* Ray intersects with the box. */
-		return true;
+		return tmin;
 	}
 	
 	/*
