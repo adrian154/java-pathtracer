@@ -87,7 +87,8 @@ public class Pathtracer {
 				
 				Ray newRay = new Ray(hit.hitPoint, newDirection);
 				
-				incoming = incoming.plus(traceRay(newRay, bounces + 1)).times(newDirection.dot(hit.normal));
+				/* Dot product cancels out because of cosine weighting optimization */
+				incoming = incoming.plus(traceRay(newRay, bounces + 1)).divBy(Math.PI);
 			}
 			
 			incoming = incoming.divBy(this.numSecondaryRays).times(hit.material.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y));
@@ -109,7 +110,7 @@ public class Pathtracer {
 	/*
 	 * Render a scene.
 	 */
-	public void renderSectionf(Output output, int start, int end) {
+	public void renderSection(Output output, int start, int end) {
 		
 		double pixelWidth = 1.0 / output.width;
 		double pixelHeight = 1.0 / output.height;
@@ -150,9 +151,9 @@ public class Pathtracer {
 	}
 	
 	/*
-	 * Test
+	 * Test; render with flat shading
 	 */
-	public void renderSection(Output output, int start, int end) {
+	public void renderSectionFlat(Output output, int start, int end) {
 		
 		Vector point = new Vector(0.0, 3.0, -2.0);
 		
@@ -182,7 +183,8 @@ public class Pathtracer {
 					ObjectHit hit = getHit(primaryRay);
 					if(hit.hit) {
 						Vector vec = point.minus(hit.hitPoint).normalized();
-						color = color.plus(hit.material.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y).times(255.0 * vec.dot(hit.normal)));
+						double dot = vec.dot(hit.normal);
+						color = color.plus(hit.material.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y).times(255.0 * dot));
 					}
 				}
 			

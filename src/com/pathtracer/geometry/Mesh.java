@@ -23,7 +23,7 @@ public class Mesh implements Shape {
 	public OctreeBoundingBox octree;
 	
 	/* Static field - octree level, for mesh construction. */
-	public static int OCTREE_LEVEL = 4;
+	public static int OCTREE_LEVEL = 3;
 	
 	/* Constructor -  load mesh. */
 	public Mesh(File file, double scale, Vector offset) {
@@ -103,7 +103,11 @@ public class Mesh implements Shape {
 		this.triangles = triangles.toArray(new int[triangles.size()][3]);
 		
 		/* Compute octree for the mesh */
+		System.out.println("Building " + Mesh.OCTREE_LEVEL + "-level octree for mesh " + file.getName());
+		long startTime = System.currentTimeMillis();
 		this.computeOctree();
+		long elapsed = System.currentTimeMillis() - startTime;
+		System.out.println("Finished building octree in " + elapsed + " milliseconds.");
 		
 	}
 	
@@ -314,7 +318,7 @@ public class Mesh implements Shape {
 		/* Terminal box: iterate through triangles. */
 		if(box.isTerminal) {
 			/* Return bogus vector */
-			return new Hit(true, new Vector(0.0, 0.0, 0.0), 0.1, new Vector(0.0, 0.0, -1.0), new Vector(0.0, 0.0, 0.0));
+			return intersect(ray, box.containedTriangles);
 		}
 		
 		/* Otherwise: recurse, find nearest box. */

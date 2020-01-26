@@ -19,7 +19,7 @@ public interface Material {
 	public static Vector getDiffuseVector(Vector normal) {
 		
 		/* Get random vector in hemisphere */
-		Vector randomVector = Vector.randomInHemisphere();
+		Vector randomVector = Vector.cosineWeightedInHemisphere();
 		
 		/* Create basis vectors for new coordinate system where Y is normal */
 		Vector bvy = normal;

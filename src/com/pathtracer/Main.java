@@ -19,8 +19,8 @@ public class Main {
 	
 		boolean GUI = true;
 		
-		int numPrimaryRays = 32;
-		int numSecondaryRays = 6;
+		int numPrimaryRays = 16;
+		int numSecondaryRays = 3;
 		int numThreads = Runtime.getRuntime().availableProcessors();
 		
 		/* Reads command-line arguments */
@@ -37,7 +37,7 @@ public class Main {
 		}
 		
 		/* Set up camera, scene, and output. */
-		Output output = new Output(512, 512);
+		Output output = new Output(256, 256);
 		Camera camera = new Camera(60.0, new Vector(0.0, 0.0, -10.0), new Vector(0.0, 0.0, 1.0), new Vector(0.0, 1.0, 0.0));
 		Scene scene = new Scene();
 		Pathtracer pathtracer = new Pathtracer(numPrimaryRays, numSecondaryRays, scene, camera);
@@ -60,7 +60,7 @@ public class Main {
 		
 		/* Start live preview. */
 		if(GUI) {
-			LivePreviewFrame frame = new LivePreviewFrame(output.image, 1);
+			LivePreviewFrame frame = new LivePreviewFrame(output.image, 2);
 			frame.setVisible(true);
 		}
 		
