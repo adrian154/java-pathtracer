@@ -1,11 +1,12 @@
 package com.pathtracer.geometry;
 
+import com.pathtracer.Hit;
 import com.pathtracer.Pathtracer;
 
 /*
  * 3D axis aligned bounding box.
  */
-public class BoundingBox {
+public class BoundingBox implements Shape {
 
 	/*
 	 * Minimum and maximum points of the box.
@@ -53,6 +54,35 @@ public class BoundingBox {
 		
 		/* Ray intersects with the box. */
 		return tmin;
+	}
+	
+	/*
+	 * Proper intersection
+	 */
+	public Hit intersect(Ray ray) {
+		
+		double distance = intersectDistance(ray);
+		if(distance == Double.POSITIVE_INFINITY)
+			return Hit.MISS;
+		
+		Vector hitPoint = ray.point(distance);
+
+		Vector middle = min.plus(max.minus(min).divBy(2.0));
+		double deltaX = hitPoint.x - middle.x;
+		double deltaY = hitPoint.y - middle.y;
+		double deltaZ = hitPoint.z - middle.z;
+		
+		Vector normal;
+		if(Math.abs(Math.abs(deltaX) - this.getWidth() / 2) < Pathtracer.MIN_DISTANCE) {
+			normal = new Vector(Math.signum(deltaX), 0.0, 0.0);
+		} else if(Math.abs(Math.abs(deltaY) - this.getHeight() / 2) < Pathtracer.MIN_DISTANCE) {
+			normal = new Vector(0.0, Math.signum(deltaY), 0.0);
+		} else {
+			normal = new Vector(0.0, 0.0, Math.signum(deltaZ));
+		}
+		
+		return new Hit(true, hitPoint, distance, normal, new Vector(0.0, 0.0, 0.0));
+		
 	}
 	
 	/*

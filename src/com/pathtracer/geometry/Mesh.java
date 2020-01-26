@@ -317,8 +317,8 @@ public class Mesh implements Shape {
 		
 		/* Terminal box: iterate through triangles. */
 		if(box.isTerminal) {
-			/* Return bogus vector */
 			return intersect(ray, box.containedTriangles);
+			//return box.intersect(ray);
 		}
 		
 		/* Otherwise: recurse, find nearest box. */

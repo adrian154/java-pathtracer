@@ -12,22 +12,25 @@ public class Pathtracer {
 	
 	public int numPrimaryRays;
 	public int numSecondaryRays;
+	public int numBounces;
 	
 	public Material skyMaterial;
 	public Scene scene;
 	public Camera camera;
 	
-	public Pathtracer(int numPrimaryRays, int numSecondaryRays, Scene scene, Camera camera) {
+	public Pathtracer(int numPrimaryRays, int numSecondaryRays, int numBounces, Scene scene, Camera camera) {
 		this.numPrimaryRays = numPrimaryRays;
 		this.numSecondaryRays = numSecondaryRays;
+		this.numBounces = numBounces;
 		this.scene = scene;
 		this.camera = camera;
 		this.skyMaterial = new BasicMaterial(new Vector(0.0, 0.0, 0.0), new Vector(0.0, 0.0, 0.0), 0.0, 0.0);
 	}
 	
-	public Pathtracer(int numPrimaryRays, int numSecondaryRays, Scene scene, Camera camera, Material skyMaterial) {
+	public Pathtracer(int numPrimaryRays, int numSecondaryRays, int numBounces, Scene scene, Camera camera, Material skyMaterial) {
 		this.numPrimaryRays = numPrimaryRays;
 		this.numSecondaryRays = numSecondaryRays;
+		this.numBounces = numBounces;
 		this.scene = scene;
 		this.camera = camera;
 		this.skyMaterial = skyMaterial;
@@ -61,7 +64,7 @@ public class Pathtracer {
 	public Vector traceRay(Ray ray, int bounces) {
 		
 		/* Terminate after too  many bounces. */
-		if(bounces > 3)
+		if(bounces > this.numBounces)
 			return new Vector(0.0, 0.0, 0.0);
 		
 		/* Trace ray. */
@@ -78,7 +81,7 @@ public class Pathtracer {
 			/* Do secondary rays. */
 			for(int i = 0; i < this.numSecondaryRays; i++) {
 				Vector newDirection;
-				
+
 				if(Math.random() < hit.material.getDiffuseness()) {
 					newDirection = Material.getDiffuseVector(hit.normal);
 				} else {
@@ -86,9 +89,8 @@ public class Pathtracer {
 				}
 				
 				Ray newRay = new Ray(hit.hitPoint, newDirection);
-				
-				/* Dot product cancels out because of cosine weighting optimization */
-				incoming = incoming.plus(traceRay(newRay, bounces + 1)).divBy(Math.PI);
+				Vector incomingLight = traceRay(newRay, bounces + 1);
+				incoming = incoming.plus(incomingLight.times(newDirection.dot(hit.normal)));
 			}
 			
 			incoming = incoming.divBy(this.numSecondaryRays).times(hit.material.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y));
@@ -153,9 +155,9 @@ public class Pathtracer {
 	/*
 	 * Test; render with flat shading
 	 */
-	public void renderSectionFlat(Output output, int start, int end) {
+	public void renderSectionf(Output output, int start, int end) {
 		
-		Vector point = new Vector(0.0, 3.0, -2.0);
+		Vector point = new Vector(0.0, 3.0, -4.0);
 		
 		double pixelWidth = 1.0 / output.width;
 		double pixelHeight = 1.0 / output.height;
@@ -165,11 +167,8 @@ public class Pathtracer {
 				
 				output.writePixel(x, y, new Vector(0.0, 255.0, 0.0));
 				
-				Vector color = new Vector(0.0, 0.0, 0.0);
-				
-				for(int i = 0; i < 10; i++) {
-					double worldX = ((double)x - output.width / 2.0) / output.width + (Math.random() - 0.5) * pixelWidth;
-					double worldY = ((double)y - output.height / 2.0) / output.height + (Math.random() - 0.5) * pixelHeight;
+					double worldX = ((double)x - output.width / 2.0) / output.width;
+					double worldY = ((double)y - output.height / 2.0) / output.height;
 							
 					Vector locDirection = new Vector(worldX, worldY, camera.focalLength);
 					
@@ -180,15 +179,14 @@ public class Pathtracer {
 					Vector direction = Transforms.localToWorldCoords(locDirection, u, v, w);
 					Ray primaryRay = new Ray(camera.position, direction);
 					
+					Vector color = new Vector(0.0, 0.0, 0.0);
 					ObjectHit hit = getHit(primaryRay);
 					if(hit.hit) {
 						Vector vec = point.minus(hit.hitPoint).normalized();
 						double dot = vec.dot(hit.normal);
 						color = color.plus(hit.material.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y).times(255.0 * dot));
 					}
-				}
 			
-				color = color.divBy(10.0);
 				output.writePixel(x, y, color);
 				
 			}

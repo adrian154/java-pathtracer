@@ -93,16 +93,6 @@ public class Vector {
 		);
 	}
 	
-	public static Vector cosineWeightedInHemisphere() {
-		double theta = 2 * Math.PI * Math.random();
-		double phi = Math.random() * Math.PI / 2;
-		return new Vector(
-			Math.sin(phi) * Math.cos(theta),
-			Math.abs(Math.cos(phi)),
-			Math.sin(theta) * Math.sin(phi)
-		);
-	}
-	
 	public static Vector fromSpherical(double theta, double phi) {
 		theta *= Math.PI / 180;
 		phi *= Math.PI / 180;
