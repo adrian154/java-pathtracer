@@ -166,7 +166,7 @@ public class Pathtracer {
 				
 				Vector color = new Vector(0.0, 0.0, 0.0);
 				
-				for(int i = 0; i < 64; i++) {
+				for(int i = 0; i < 10; i++) {
 					double worldX = ((double)x - output.width / 2.0) / output.width + (Math.random() - 0.5) * pixelWidth;
 					double worldY = ((double)y - output.height / 2.0) / output.height + (Math.random() - 0.5) * pixelHeight;
 							
@@ -186,7 +186,7 @@ public class Pathtracer {
 					}
 				}
 			
-				color = color.divBy(64.0);
+				color = color.divBy(10.0);
 				output.writePixel(x, y, color);
 				
 			}

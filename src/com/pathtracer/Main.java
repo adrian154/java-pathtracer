@@ -37,7 +37,7 @@ public class Main {
 		}
 		
 		/* Set up camera, scene, and output. */
-		Output output = new Output(1024, 1024);
+		Output output = new Output(512, 512);
 		Camera camera = new Camera(60.0, new Vector(0.0, 0.0, -10.0), new Vector(0.0, 0.0, 1.0), new Vector(0.0, 1.0, 0.0));
 		Scene scene = new Scene();
 		Pathtracer pathtracer = new Pathtracer(numPrimaryRays, numSecondaryRays, scene, camera);

@@ -1,5 +1,7 @@
 package com.pathtracer.geometry;
 
+import com.pathtracer.Pathtracer;
+
 /*
  * 3D axis aligned bounding box.
  */
@@ -36,7 +38,7 @@ public class BoundingBox {
 		double tmax = Math.min(Math.min(Math.max(xmin, xmax), Math.max(ymin, ymax)), Math.max(zmin, zmax));
 	
 		/* Negative: AABB is behind the ray. */
-		if(tmax < 0) {
+		if(tmax < Pathtracer.MIN_DISTANCE) {
 			return false;
 		}
 		

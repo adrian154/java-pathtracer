@@ -23,7 +23,7 @@ public class Mesh implements Shape {
 	public OctreeBoundingBox octree;
 	
 	/* Static field - octree level, for mesh construction. */
-	public static int OCTREE_LEVEL = 2;
+	public static int OCTREE_LEVEL = 4;
 	
 	/* Constructor -  load mesh. */
 	public Mesh(File file, double scale, Vector offset) {
@@ -107,6 +107,25 @@ public class Mesh implements Shape {
 		
 	}
 	
+	/* 
+	 * Check if bounding box contains parts of mesh.
+	 */
+	public boolean hasTrianglesInBoundingBox(BoundingBox box) {
+		
+		for(int i = 0; i < this.triangles.length; i++) {
+			int triangle[] = this.triangles[i];
+			Vector v1 = vertexes[triangle[0] - 1];
+			Vector v2 = vertexes[triangle[1] - 1];
+			Vector v3 = vertexes[triangle[2] - 1];
+			
+			if(box.contains(v1) || box.contains(v2) || box.contains(v3)) 
+				return true;
+		}
+		
+		return false;
+		
+	}
+	
 	/*
 	 * Get triangles in a bounding box. 	
 	 */
@@ -184,12 +203,20 @@ public class Mesh implements Shape {
 		
 		/* Split box into 8 subboxes. */
 		OctreeBoundingBox boxes[] = new OctreeBoundingBox[8];
+		
+		/* Bottom half */
+		/* Left */
 		boxes[0] = new OctreeBoundingBox(min, middle);
 		boxes[1] = new OctreeBoundingBox(min.plus(new Vector(0.0, 0.0, depth / 2)), middle.plus(new Vector(0.0, 0.0, depth / 2)));
+		/* Right */
 		boxes[2] = new OctreeBoundingBox(min.plus(new Vector(width / 2, 0.0, 0.0)), middle.plus(new Vector(width / 2, 0.0, 0.0)));
 		boxes[3] = new OctreeBoundingBox(min.plus(new Vector(width / 2, 0.0, depth / 2)), middle.plus(new Vector(width / 2, 0.0, depth / 2)));
+		
+		/* Top half */
+		/* Left */
 		boxes[4] = new OctreeBoundingBox(min.plus(new Vector(0.0, height / 2, 0.0)), middle.plus(new Vector(0.0, height / 2, 0.0)));
 		boxes[5] = new OctreeBoundingBox(min.plus(new Vector(0.0, height / 2, depth / 2)), middle.plus(new Vector(0.0, height / 2, depth / 2)));
+		/* Right */
 		boxes[6] = new OctreeBoundingBox(min.plus(new Vector(width / 2, height / 2, 0.0)), middle.plus(new Vector(width / 2, height / 2, 0.0)));
 		boxes[7] = new OctreeBoundingBox(middle, max);
 		
@@ -201,15 +228,13 @@ public class Mesh implements Shape {
 		for(int i = 0; i < 8; i++) {
 			
 			OctreeBoundingBox subbox = boxes[i];
-			
-			/* Count number of triangles in box. */
-			int containedTriangles[] = getTrianglesInBoundingBox(subbox);
-			
+
 			/* If there are triangles in the box, */
-			if(containedTriangles.length > 0) {
+			if(hasTrianglesInBoundingBox(subbox)) {
 				
 				/* If it's a terminal node attach the triangles. */
 				if(level == Mesh.OCTREE_LEVEL) {
+					int containedTriangles[] = getTrianglesInBoundingBox(subbox);
 					subbox.containedTriangles = containedTriangles;
 					subbox.isTerminal = true;
 				} else {
@@ -260,7 +285,7 @@ public class Mesh implements Shape {
 	}
 	
 	/*
-	 * Recursive; check if ray inersects with octree.
+	 * Recursive; check if ray intersects with octree.
 	 */
 	public Hit intersect(Ray ray, OctreeBoundingBox box) {
 		
@@ -271,7 +296,9 @@ public class Mesh implements Shape {
 		
 		/* Terminal box: iterate through triangles. */
 		if(box.isTerminal) {
-			return intersect(ray, box.containedTriangles);
+			//return intersect(ray, box.containedTriangles);
+			/* Return bogus vector */
+			return new Hit(true, new Vector(0.0, 0.0, 0.0), 0.1, new Vector(0.0, 0.0, -1.0), new Vector(0.0, 0.0, 0.0));
 		}
 		
 		/* Otherwise: recurse, find nearest box. */
