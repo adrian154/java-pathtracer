@@ -26,6 +26,6 @@ A pathtracer written in Java.
 
 ![image](https://i.imgur.com/pNEzsmA.png)
 
-![image](https://i.imgur.com/T6QSeCB.gif)
+![image](https://i.imgur.com/H55EZgu.png)
 
-![image](https://i.imgur.com/8GLaNmy.png)
+![image](https://i.imgur.com/SrznmQm.png)
