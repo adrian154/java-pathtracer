@@ -23,7 +23,7 @@ public class Mesh implements Shape {
 	public OctreeBoundingBox octree;
 	
 	/* Static field - octree level, for mesh construction. */
-	public static int OCTREE_LEVEL = 3;
+	public static int OCTREE_LEVEL = 2;
 	
 	/* Constructor -  load mesh. */
 	public Mesh(File file, double scale, Vector offset) {
@@ -81,6 +81,27 @@ public class Mesh implements Shape {
 						indexes[vert] = Integer.parseInt(strindex < 0 ? parts[vert + 1] : parts[vert + 1].substring(0, strindex));
 					}
 					
+					if(indexes.length == 3) {
+						int tri[] = new int[3];
+						tri[0] = indexes[0];
+						tri[1] = indexes[1];
+						tri[2] = indexes[2];
+						triangles.add(tri);
+					} else if(indexes.length == 4) {
+						int tri1[] = new int[3];
+						tri1[0] = indexes[0];
+						tri1[1] = indexes[1];
+						tri1[2] = indexes[2];
+						triangles.add(tri1);
+						
+						int tri2[] = new int[3];
+						tri2[0] = indexes[0];
+						tri2[1] = indexes[2];
+						tri2[2] = indexes[3];
+						triangles.add(tri2);
+					}
+					
+					/*
 					for(int vert = 0; vert < indexes.length - 2; vert++) {
 						int tri[] = new int[3];
 						tri[0] = indexes[vert];
@@ -88,6 +109,7 @@ public class Mesh implements Shape {
 						tri[2] = indexes[vert + 2];
 						triangles.add(tri);
 					}
+					*/
 					
 				}
 				
@@ -319,6 +341,7 @@ public class Mesh implements Shape {
 		if(box.isTerminal) {
 			return intersect(ray, box.containedTriangles);
 			//return box.intersect(ray);
+			
 		}
 		
 		/* Otherwise: recurse, find nearest box. */

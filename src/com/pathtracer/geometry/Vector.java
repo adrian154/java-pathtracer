@@ -93,6 +93,16 @@ public class Vector {
 		);
 	}
 	
+	public static Vector uniformInSphere() {
+		double theta = 2 * Math.PI * Math.random();
+		double phi = Math.acos(1 - 2 * Math.random());
+		return new Vector(
+			Math.sin(phi) * Math.cos(theta),
+			Math.cos(phi),
+			Math.sin(theta) * Math.sin(phi)
+		);
+	}
+	
 	public static Vector fromSpherical(double theta, double phi) {
 		theta *= Math.PI / 180;
 		phi *= Math.PI / 180;

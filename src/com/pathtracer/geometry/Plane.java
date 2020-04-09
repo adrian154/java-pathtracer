@@ -18,6 +18,12 @@ public class Plane implements Shape {
 		this.tilingSize = 1.0;
 	}
 	
+	public Plane(Vector normal, Vector point, Side side) {
+		
+		/* WIP NOT DONE YET */
+		
+	}
+	
 	public Plane(Vector normal, Vector point, double tilingSize) {
 		this.normal = normal;
 		this.point = point;
@@ -32,6 +38,11 @@ public class Plane implements Shape {
 		/* Check if equation has solution.*/
 		double denom = ray.direction.dot(this.normal);
 		if(denom == 0) {
+			return Hit.MISS;
+		}
+		
+		Vector diff = ray.origin.minus(this.point).normalized();
+		if(diff.dot(this.normal) < 0) {
 			return Hit.MISS;
 		}
 		

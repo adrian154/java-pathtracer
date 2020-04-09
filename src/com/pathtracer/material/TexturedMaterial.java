@@ -14,12 +14,14 @@ public class TexturedMaterial implements Material {
 	public Vector emission;
 	public double diffuseness;
 	public double glossiness;
+	public boolean plastic;
 	
-	public TexturedMaterial(BufferedImage texture, Vector emission, double diffuseness, double glossiness) {
+	public TexturedMaterial(BufferedImage texture, Vector emission, double diffuseness, double glossiness, boolean plastic) {
 		this.texture = texture;
 		this.emission = emission;
 		this.diffuseness = diffuseness;
 		this.glossiness = glossiness;
+		this.plastic = plastic;
 	}
 	
 	public Vector getColor(double u, double v) {
@@ -35,8 +37,8 @@ public class TexturedMaterial implements Material {
 		
 	}
 
-	public Vector getEmission() {
-		return emission;
+	public Vector getEmission(double u, double v) {
+		return emission.times(getColor(u, v));
 	}
 
 	public double getDiffuseness() {
@@ -60,6 +62,10 @@ public class TexturedMaterial implements Material {
 		
 		return image;
 		
+	}
+	
+	public boolean isPlastic() {
+		return plastic;
 	}
 	
 }

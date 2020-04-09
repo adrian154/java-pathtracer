@@ -9,10 +9,11 @@ import com.pathtracer.geometry.Vector;
 public interface Material {
 
 	public Vector getColor(double u, double v);
-	public Vector getEmission();
+	public Vector getEmission(double u, double v);
 	public double getDiffuseness();
 	public double getGlossiness();
-
+	public boolean isPlastic();
+	
 	/*
 	 * Static method. Get random diffuse vector.
 	 */
@@ -43,5 +44,6 @@ public interface Material {
 			return reflect;
 		}
 	}
+	
 	
 }
