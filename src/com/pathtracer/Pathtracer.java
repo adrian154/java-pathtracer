@@ -10,7 +10,7 @@ import com.pathtracer.material.Material;
 
 public class Pathtracer {
 
-	public static double MIN_DISTANCE = 0.0001;
+	public static double MIN_DISTANCE = 0.000000001;
 	
 	public int numPrimaryRays;
 	public int numSecondaryRays;
@@ -236,8 +236,9 @@ public class Pathtracer {
 					
 					double factor = 255 * vec.dot(hit.normal) + 255 * vec2.dot(hit.normal);
 					
-					color = color.plus(hit.material.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y).times(factor));
+					//color = color.plus(hit.material.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y).times(factor));
 					//color = new Vector(hit.textureCoordinates.x, hit.textureCoordinates.y, 1 - hit.textureCoordinates.x - hit.textureCoordinates.y).times(255);
+					color = new Vector(255.0, 255.0, 255.0);
 				}
 			
 				output.writePixel(x, y, color);

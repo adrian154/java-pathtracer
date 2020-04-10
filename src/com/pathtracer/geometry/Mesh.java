@@ -409,6 +409,7 @@ public class Mesh implements Shape {
 				if(hit.distance < nearestHit.distance) {
 					nearestHit = hit;
 				}
+				
 			}
 			
 		}

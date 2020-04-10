@@ -74,12 +74,12 @@ public class Main {
 		Circle geomlight = new Circle(new Vector(0.0, -1.0, 0.0), new Vector(0.0, HEIGHT - 0.2, 5.0), 1.0);
 		Mesh mesh = new Mesh(new File("Camellia.obj"), 0.01, new Vector(0.1, 1.0, 3.0));
 		
-		scene.objects.add(new WorldObject(geomfloor, matfloor));
-		scene.objects.add(new WorldObject(geomlwall, matlwall));
-		scene.objects.add(new WorldObject(geomrwall, matrwall));
+		//scene.objects.add(new WorldObject(geomfloor, matfloor));
+		//scene.objects.add(new WorldObject(geomlwall, matlwall));
+		//scene.objects.add(new WorldObject(geomrwall, matrwall));
 		//scene.objects.add(new WorldObject(geomlight, matlight));
-		scene.objects.add(new WorldObject(geomceiling, matceiling));
-		scene.objects.add(new WorldObject(geomfwall, matfwall));
+		//scene.objects.add(new WorldObject(geomceiling, matceiling));
+		//scene.objects.add(new WorldObject(geomfwall, matfwall));
 		//scene.objects.add(new WorldObject(geombox, WHITE));
 		//scene.objects.add(new WorldObject(geomsphere, matsphere));
 		scene.objects.add(new WorldObject(mesh, matmesh));
