@@ -18,6 +18,8 @@ A pathtracer written in Java.
 
 ## Gallery
 
+![image](https://i.imgur.com/F1XXFTq.png)
+
 ![image](https://i.imgur.com/JH117oj.png)
 
 There's some holes in the bunny's shadow because of a pretty stupid bug I made. Long story short, just make all your planes double-sided.
