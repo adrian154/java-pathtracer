@@ -12,15 +12,25 @@ import com.pathtracer.geometry.Vector;
  */
 public class Output {
 	
+	public Vector values[][];
 	public BufferedImage image;
 	public int width;
 	public int height;
 	
-	public Output(int width, int height) {
+	public Output(int width, int height, boolean progressive) {
 
 		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		this.width = width;
 		this.height = height;
+		
+		if(progressive) {
+			values = new Vector[width][height];
+			for(int i = 0; i < width; i++) {
+				for(int j = 0; j < height; j++) {
+					values[i][j] = new Vector(0.0, 0.0, 0.0);
+				}
+			}
+		}
 	
 	}
 	

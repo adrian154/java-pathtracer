@@ -52,16 +52,24 @@ public class Renderer {
 		if(finishedThreads == numThreads) {
 			
 			/* Write to file */
-			output.writeToFile("output.png");
+			if(pathtracer.progressive) {
+				output.writeToFile(pathtracer.samples + ".png");
+			}
 			
 			/* Check timing */
 			long elapsed = System.currentTimeMillis() - startTime;
 			System.out.println("Finished in " + elapsed + " milliseconds.");
 			
 			/* Shut down executor service */
-			executorService.shutdown();
+			if(pathtracer.progressive) {
+				this.startRender();
+				pathtracer.samples++;
+			} else {
+				executorService.shutdown();
+			}
 			
 		}
+		
 	}
 	
 }

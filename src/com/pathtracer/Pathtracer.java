@@ -15,18 +15,23 @@ public class Pathtracer {
 	public int numPrimaryRays;
 	public int numSecondaryRays;
 	public int numBounces;
+	public boolean progressive;
+	public int samples;
 	
 	public Material skyMaterial;
 	public Scene scene;
 	public Camera camera;
 	
-	public Pathtracer(int numPrimaryRays, int numSecondaryRays, int numBounces, Scene scene, Camera camera) {
+	public Pathtracer(int numPrimaryRays, int numSecondaryRays, int numBounces, Scene scene, Camera camera, boolean progressive) {
 		this.numPrimaryRays = numPrimaryRays;
 		this.numSecondaryRays = numSecondaryRays;
 		this.numBounces = numBounces;
 		this.scene = scene;
 		this.camera = camera;
 		this.skyMaterial = new BasicMaterial(new Vector(0.0, 0.0, 0.0), new Vector(0.0, 0.0, 0.0), 0.0, 0.0, false);
+		this.progressive = progressive;
+		
+		samples = 1;
 	}
 	
 	public Pathtracer(int numPrimaryRays, int numSecondaryRays, int numBounces, Scene scene, Camera camera, Material skyMaterial) {
@@ -160,7 +165,7 @@ public class Pathtracer {
 	/*
 	 * Render a scene.
 	 */
-	public void renderSectionF(Output output, int start, int end) {
+	public void renderSection(Output output, int start, int end) {
 		
 		double pixelWidth = 1.0 / output.width;
 		double pixelHeight = 1.0 / output.height;
@@ -190,20 +195,26 @@ public class Pathtracer {
 					color = color.plus(traceRay(primaryRay, 0));
 				}
 				
-				color = correct(color.divBy(this.numPrimaryRays), 0.8);
-	
-				output.writePixel(x, y, color);
+				//color = correct(color.divBy(this.numPrimaryRays), 0.8);
+				color = color.divBy(this.numPrimaryRays);
+				
+				if(this.progressive) {
+					output.values[x][y] = output.values[x][y].plus(color);
+					output.writePixel(x, y, output.values[x][y].divBy(samples));
+				} else {
+					output.writePixel(x, y, color);
+				}
 				
 			}
 			
 		}
-		
+
 	}
 	
 	/*
 	 * Test; render with flat shading
 	 */
-	public void renderSection(Output output, int start, int end) {
+	public void renderSectionF(Output output, int start, int end) {
 		
 		//Vector point = camera.position;
 		Vector point = new Vector(0.0, 3.8, 8.0);
@@ -236,9 +247,8 @@ public class Pathtracer {
 					
 					double factor = 255 * vec.dot(hit.normal) + 255 * vec2.dot(hit.normal);
 					
-					//color = color.plus(hit.material.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y).times(factor));
+					color = color.plus(hit.material.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y).times(factor));
 					//color = new Vector(hit.textureCoordinates.x, hit.textureCoordinates.y, 1 - hit.textureCoordinates.x - hit.textureCoordinates.y).times(255);
-					color = new Vector(255.0, 255.0, 255.0);
 				}
 			
 				output.writePixel(x, y, color);

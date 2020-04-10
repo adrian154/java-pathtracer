@@ -72,8 +72,8 @@ public class Mesh implements Shape {
 					
 					/* Load vertex. */
 					double d1 = Double.parseDouble(parts[1]) * scale.x + offset.x;
-					double d2 = Double.parseDouble(parts[2]) * scale.y + offset.y;
-					double d3 = Double.parseDouble(parts[3]) * scale.z + offset.z;
+					double d2 = Double.parseDouble(parts[3]) * scale.y + offset.y;
+					double d3 = Double.parseDouble(parts[2]) * scale.z + offset.z;
 					vertexes.add(new Vector(d1, d2, d3));
 					
 				} else {

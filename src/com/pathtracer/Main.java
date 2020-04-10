@@ -25,7 +25,7 @@ public class Main {
 		int numPrimaryRays = 5;
 		int numSecondaryRays = 1;
 		int numThreads = Runtime.getRuntime().availableProcessors();
-		int numBounces = 6;
+		int numBounces = 3;
 		
 		Mesh.OCTREE_LEVEL = 3;
 		
@@ -45,44 +45,52 @@ public class Main {
 		}
 		
 		/* Set up camera, scene, and output. */
-		Output output = new Output(512, 512);
-		Camera camera = new Camera(60.0, new Vector(0.0, 2.0, 0.0), new Vector(0.0, 0.0, 1.0), new Vector(0.0, 1.0, 0.0));
+		Output output = new Output(720, 720, true);
+		Camera camera = new Camera(60.0, new Vector(0.0, 1.8, 0.0), new Vector(0.0, 0.0, 1.0), new Vector(0.0, 1.0, 0.0));
 		Scene scene = new Scene();
-		Pathtracer pathtracer = new Pathtracer(numPrimaryRays, numSecondaryRays, numBounces, scene, camera);
+		Pathtracer pathtracer = new Pathtracer(numPrimaryRays, numSecondaryRays, numBounces, scene, camera, true);
 		
 		/* Add objects to scene */
-		Material matfloor = new TexturedMaterial(TexturedMaterial.loadTexture("mossybrick.png"), new Vector(0.0, 0.0, 0.0), 1.0, 0.0, false);
-		Material matlwall = MaterialHelper.createDiffuse(new Vector(1.0, 1.0, 0.0));
-		Material matrwall = MaterialHelper.createDiffuse(new Vector(0.0, 1.0, 1.0));
-		Material matlight = new BasicMaterial(new Vector(1.0, 1.0, 1.0), new Vector(1.0, 1.0, 1.0).times(4000.0), 1.0, 0.0, false);
+		Material matfloor = new TexturedMaterial(TexturedMaterial.loadTexture("oakplanks.png"), new Vector(0.0, 0.0, 0.0), 1.0, 0.0, false);
+		Material matlight1 = new BasicMaterial(new Vector(1.0, 1.0, 1.0), new Vector(1.0, 1.0, 0.95).times(3000.0), 1.0, 0.0, false);
+		Material matlight2 = new BasicMaterial(new Vector(1.0, 1.0, 1.0), new Vector(0.95, 1.0, 1.0).times(3000.0), 1.0, 0.0, false);
 		Material matceiling = MaterialHelper.createDiffuse(new Vector(1.0, 1.0, 1.0));
-		Material matfwall = new TexturedMaterial(TexturedMaterial.loadTexture("wallpaper.png"), new Vector(0.0, 0.0, 0.0), 1.0, 0.0, false);
-		Material matsphere = new TexturedMaterial(TexturedMaterial.loadTexture("earth.jpg"), new Vector(0.0, 0.0, 0.0), 1.0, 0.0, false);
+		//Material matfwall = new TexturedMaterial(TexturedMaterial.loadTexture("wallpaper.png"), new Vector(0.0, 0.0, 0.0), 1.0, 0.0, false);
+		Material matwall = MaterialHelper.createDiffuse(new Vector(0x95/255.0, 0xC9/255.0, 0xDE/255.0));
 		Material WHITE = MaterialHelper.createDiffuse(new Vector(1.0, 1.0, 1.0));
-		Material matmesh = new BasicMaterial(new Vector(1.0, 0.6, 1.0), new Vector(0.0, 0.0, 0.0), 0.7, 0.2, true);
+		Material matmesh = new BasicMaterial(new Vector(1.0, 1.0, 0.95), new Vector(0.0, 0.0, 0.0), 1.0, 0.0, true);
+		Material matvishnu = new BasicMaterial(new Vector(1.0, 1.0, 0.0), new Vector(0.0, 0.0, 0.0), 0.7, 0.2, false);
 		
 		final double WIDTH = 5.0;
 		final double HEIGHT = 4.0;
-		final double DEPTH = 30.0;
+		final double DEPTH = 18.0;
 		Plane geomfloor = new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, 0.0, 0.0));
 		Plane geomlwall = new Plane(new Vector(1.0, 0.0, 0.0), new Vector(-WIDTH / 2, 0.0, 0.0));
 		Plane geomrwall = new Plane(new Vector(-1.0, 0.0, 0.0), new Vector(WIDTH / 2, 0.0, 0.0));
 		Plane geomceiling = new Plane(new Vector(0.0, -1.0, 0.0), new Vector(0.0, HEIGHT, 0));
 		Plane geomfwall = new Plane(new Vector(0.0, 0.0, -1.0), new Vector(0.0, 0.0, DEPTH / 2), 4.0);
-		BoundingBox geombox = new BoundingBox(new Vector(0.6, 0.0, 6.0), new Vector(1.6, 1.0, 7.0));
-		Sphere geomsphere = new Sphere(new Vector(1.1, 1.5, 6.5), 0.5);
-		Circle geomlight = new Circle(new Vector(0.0, -1.0, 0.0), new Vector(0.0, HEIGHT - 0.2, 5.0), 1.0);
-		Mesh mesh = new Mesh(new File("Camellia.obj"), 0.01, new Vector(0.1, 1.0, 3.0));
+		BoundingBox geombox = new BoundingBox(new Vector(0.5, 0.0, 4.0), new Vector(1.5, 1.0, 5.0));
+		//Circle geomlight = new Circle(new Vector(0.0, -1.0, 0.0), new Vector(0.0, HEIGHT - 0.2, 5.0), 1.0);
+		Circle l1 = new Circle(new Vector(0.0, -1.0, 0.0), new Vector(-1.0, HEIGHT - 0.1, 7.0), 0.4);
+		Circle l2 = new Circle(new Vector(0.0, -1.0, 0.0), new Vector(1.0, HEIGHT - 0.1, 7.0), 0.4);
+		Circle l3 = new Circle(new Vector(0.0, -1.0, 0.0), new Vector(-1.0, HEIGHT - 0.1, 5.0), 0.4);
+		Circle l4 = new Circle(new Vector(0.0, -1.0, 0.0), new Vector(1.0, HEIGHT - 0.1, 5.0), 0.4);
 		
-		//scene.objects.add(new WorldObject(geomfloor, matfloor));
-		//scene.objects.add(new WorldObject(geomlwall, matlwall));
-		//scene.objects.add(new WorldObject(geomrwall, matrwall));
-		//scene.objects.add(new WorldObject(geomlight, matlight));
-		//scene.objects.add(new WorldObject(geomceiling, matceiling));
-		//scene.objects.add(new WorldObject(geomfwall, matfwall));
-		//scene.objects.add(new WorldObject(geombox, WHITE));
-		//scene.objects.add(new WorldObject(geomsphere, matsphere));
+		Mesh mesh = new Mesh(new File("ObamaHead.obj"), new Vector(1.0, 1.0, 1.0).times(0.06), new Vector(1.0, 1.0, 4.5));
+		Mesh gvishnu = new Mesh(new File("Vishnu.obj"), new Vector(1.0, 1.0, 1.0).times(0.002), new Vector(-0.8, 0.0, 6.5));
+		
+		scene.objects.add(new WorldObject(geomfloor, matfloor));
+		scene.objects.add(new WorldObject(geomlwall, matwall));
+		scene.objects.add(new WorldObject(geomrwall, matwall));
+		scene.objects.add(new WorldObject(l1, matlight1));
+		scene.objects.add(new WorldObject(l2, matlight2));
+		scene.objects.add(new WorldObject(l3, matlight1));
+		scene.objects.add(new WorldObject(l4, matlight2));
+		scene.objects.add(new WorldObject(geomceiling, matceiling));
+		scene.objects.add(new WorldObject(geomfwall, matwall));
+		scene.objects.add(new WorldObject(geombox, WHITE));
 		scene.objects.add(new WorldObject(mesh, matmesh));
+		scene.objects.add(new WorldObject(gvishnu, matvishnu));
 		
 		pathtracer.skyMaterial = new BasicMaterial(new Vector(1.0, 1.0, 1.0).times(0.2), new Vector(0.0, 0.0, 0.0), 1.0, 0.0, false);
 		
