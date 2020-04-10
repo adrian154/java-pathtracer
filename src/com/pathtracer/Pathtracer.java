@@ -160,7 +160,7 @@ public class Pathtracer {
 	/*
 	 * Render a scene.
 	 */
-	public void renderSection(Output output, int start, int end) {
+	public void renderSectionF(Output output, int start, int end) {
 		
 		double pixelWidth = 1.0 / output.width;
 		double pixelHeight = 1.0 / output.height;
@@ -203,9 +203,11 @@ public class Pathtracer {
 	/*
 	 * Test; render with flat shading
 	 */
-	public void renderSectionf(Output output, int start, int end) {
+	public void renderSection(Output output, int start, int end) {
 		
-		Vector point = camera.position;
+		//Vector point = camera.position;
+		Vector point = new Vector(0.0, 3.8, 8.0);
+		Vector point2 = camera.position;
 
 		for(int x = start; x < end; x++) {
 			for(int y = 0; y < output.height; y++) {
@@ -227,13 +229,14 @@ public class Pathtracer {
 				Vector color = new Vector(0.0, 0.0, 0.0);
 				
 				ObjectHit hit = getHit(primaryRay);
-				boolean visible = !getHit(new Ray(hit.hitPoint, point.minus(hit.hitPoint))).hit;
-				visible = true;
 				
-				if(hit.hit && visible) {
+				if(hit.hit) {
 					Vector vec = point.minus(hit.hitPoint).normalized();
-					double dot = vec.dot(hit.normal);
-					color = color.plus(hit.material.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y).times(255.0 * dot));
+					Vector vec2 = point2.minus(hit.hitPoint).normalized();
+					
+					double factor = 255 * vec.dot(hit.normal) + 255 * vec2.dot(hit.normal);
+					
+					color = color.plus(hit.material.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y).times(factor));
 				}
 			
 				output.writePixel(x, y, color);

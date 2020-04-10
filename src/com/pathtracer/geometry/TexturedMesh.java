@@ -14,7 +14,7 @@ public class TexturedMesh extends Mesh {
 	public int textureMappings[][];
 	
 	/* Constructor -  load mesh. */
-	public TexturedMesh(File file, double scale, Vector offset) {
+	public TexturedMesh(File file, Vector scale, Vector offset) {
 		
 		super(file, scale, offset);
 

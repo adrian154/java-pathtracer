@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.pathtracer.Hit;
+import com.pathtracer.Pathtracer;
 
 /*
  * Triangle mesh.
@@ -26,7 +27,7 @@ public class Mesh implements Shape {
 	public static int OCTREE_LEVEL = 2;
 	
 	/* Constructor -  load mesh. */
-	public Mesh(File file, double scale, Vector offset) {
+	public Mesh(File file, Vector scale, Vector offset) {
 		
 		ArrayList<Vector> vertexes = new ArrayList<Vector>();
 		ArrayList<int[]> triangles = new ArrayList<int[]>();
@@ -66,9 +67,9 @@ public class Mesh implements Shape {
 				if(parts[0].equals("v")) {
 					
 					/* Load vertex. */
-					double d1 = Double.parseDouble(parts[1]) * scale + offset.x;
-					double d2 = Double.parseDouble(parts[2]) * scale + offset.y;
-					double d3 = Double.parseDouble(parts[3]) * scale + offset.z;
+					double d1 = Double.parseDouble(parts[1]) * scale.x + offset.x;
+					double d2 = Double.parseDouble(parts[3]) * scale.y + offset.y;
+					double d3 = Double.parseDouble(parts[2]) * scale.z + offset.z;
 					vertexes.add(new Vector(d1, d2, d3));
 					
 				} else {
@@ -307,24 +308,13 @@ public class Mesh implements Shape {
 	}
 	
 	/*
-	 * Util functions for checking if a point is in a triangle
-	 */
-	public boolean sameSide(Vector p1, Vector p2, Vector a, Vector b) {
-		Vector cp1 = b.minus(a).cross(p1.minus(a));
-		Vector cp2 = b.minus(a).cross(p2.minus(a));
-		if(cp1.dot(cp2) >= 0)
-			return true;
-		else
-			return false;
-	}
-	
-	/*
 	 * Check ray-mesh intersection.
 	 */
 	public Hit intersect(Ray ray) {
 		
 		/* Walk octree and */
 		return intersect(ray, octree);
+
 	}
 	
 	/*
@@ -370,20 +360,50 @@ public class Mesh implements Shape {
 		/* Loop through triangles */
 		for(int i = 0; i < triangles.length; i++) {
 			
-			Vector p1 = vertexes[this.triangles[triangles[i]][0] - 1];
-			Vector p2 = vertexes[this.triangles[triangles[i]][1] - 1];
-			Vector p3 = vertexes[this.triangles[triangles[i]][2] - 1];
+			Vector p0 = vertexes[this.triangles[triangles[i]][0] - 1];
+			Vector p1 = vertexes[this.triangles[triangles[i]][1] - 1];
+			Vector p2 = vertexes[this.triangles[triangles[i]][2] - 1];
 			
-			Vector normal = p2.minus(p1).cross(p3.minus(p2)).normalized();
-			Plane plane = new Plane(normal, p1);
-			Hit hit = plane.intersect(ray);
+			/* Moller-Trumbore intersection algorithm */
+			Vector edge1, edge2, h, s, q;
+			double a, f, u, v;
+			edge1 = p1.minus(p0);
+			edge2 = p2.minus(p0);
+			h = ray.direction.cross(edge2);
+			a = edge1.dot(h);
+			if(a > -Pathtracer.MIN_DISTANCE && a < Pathtracer.MIN_DISTANCE) {
+				continue;
+			}
 			
-			/* Check if point is inside triangle */
-			if(hit.hit) {
-				if(sameSide(hit.hitPoint, p1, p2, p3) && sameSide(hit.hitPoint, p2, p1, p3) && sameSide(hit.hitPoint, p3, p1, p2)) {
-					if(hit.distance < nearestHit.distance) {
-						nearestHit = hit;
-					}
+			f = 1 / a;
+			s = ray.origin.minus(p0);
+			u = f * s.dot(h);
+			if(u < 0.0 || u > 1.0) {
+				continue;
+			}
+			
+			q = s.cross(edge1);
+			v = f * ray.direction.dot(q);
+			
+			if(v < 0.0 || u + v > 1.0) {
+				continue;
+			}
+			
+			double t = f * edge2.dot(q);
+			if(t > Pathtracer.MIN_DISTANCE) {
+				
+				/* Isolate hit point. */
+				Vector point = ray.point(t);
+				
+				/* Get surface normal. If it's on the wrong side, flip to ray side. */
+				Vector normal = edge2.cross(edge1).normalized();
+				if(ray.origin.minus(p0).dot(normal) < 0) {
+					normal = normal.times(-1);
+				}
+
+				Hit hit = new Hit(true, point, t, normal, new Vector(0.0, 0.0, 0.0));
+				if(hit.distance < nearestHit.distance) {
+					nearestHit = hit;
 				}
 			}
 			
