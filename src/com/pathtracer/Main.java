@@ -27,7 +27,7 @@ public class Main {
 		int numThreads = Runtime.getRuntime().availableProcessors();
 		int numBounces = 6;
 		
-		Mesh.OCTREE_LEVEL = 0;
+		Mesh.OCTREE_LEVEL = 3;
 		
 		/* Reads command-line arguments */
 		for(int i = 0; i < args.length; i++) {
@@ -72,7 +72,7 @@ public class Main {
 		BoundingBox geombox = new BoundingBox(new Vector(0.6, 0.0, 6.0), new Vector(1.6, 1.0, 7.0));
 		Sphere geomsphere = new Sphere(new Vector(1.1, 1.5, 6.5), 0.5);
 		Circle geomlight = new Circle(new Vector(0.0, -1.0, 0.0), new Vector(0.0, HEIGHT - 0.2, 5.0), 1.0);
-		Mesh mesh = new Mesh(new File("stanfordbunny.obj"), new Vector(-12.0, 12.0, -12.0), new Vector(0.0, 1.0, 5.0));
+		Mesh mesh = new Mesh(new File("Camellia.obj"), 0.01, new Vector(0.1, 1.0, 3.0));
 		
 		scene.objects.add(new WorldObject(geomfloor, matfloor));
 		scene.objects.add(new WorldObject(geomlwall, matlwall));

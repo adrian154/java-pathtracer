@@ -16,6 +16,7 @@ public class LivePreviewFrame extends JFrame {
 		this.setResizable(false);
 		this.pack();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setTitle("Java Pathtracer");
 	}
 	
 }

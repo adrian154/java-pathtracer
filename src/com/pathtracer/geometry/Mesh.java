@@ -27,6 +27,10 @@ public class Mesh implements Shape {
 	public static int OCTREE_LEVEL = 2;
 	
 	/* Constructor -  load mesh. */
+	public Mesh(File file, double scale, Vector offset) {
+		this(file, new Vector(1.0, 1.0, 1.0).times(scale), offset);
+	}
+	
 	public Mesh(File file, Vector scale, Vector offset) {
 		
 		ArrayList<Vector> vertexes = new ArrayList<Vector>();
@@ -68,8 +72,8 @@ public class Mesh implements Shape {
 					
 					/* Load vertex. */
 					double d1 = Double.parseDouble(parts[1]) * scale.x + offset.x;
-					double d2 = Double.parseDouble(parts[3]) * scale.y + offset.y;
-					double d3 = Double.parseDouble(parts[2]) * scale.z + offset.z;
+					double d2 = Double.parseDouble(parts[2]) * scale.y + offset.y;
+					double d3 = Double.parseDouble(parts[3]) * scale.z + offset.z;
 					vertexes.add(new Vector(d1, d2, d3));
 					
 				} else {
@@ -401,7 +405,7 @@ public class Mesh implements Shape {
 					normal = normal.times(-1);
 				}
 
-				Hit hit = new Hit(true, point, t, normal, new Vector(0.0, 0.0, 0.0));
+				Hit hit = new Hit(true, point, t, normal, new Vector(u, v, 0.0));
 				if(hit.distance < nearestHit.distance) {
 					nearestHit = hit;
 				}
