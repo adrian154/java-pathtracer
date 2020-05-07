@@ -30,6 +30,8 @@ There's some holes in the bunny's shadow because of a pretty stupid bug I made. 
 
 ![image](https://i.imgur.com/pNEzsmA.png)
 
+<!--
 ![image](https://i.imgur.com/H55EZgu.png)
+-->
 
 ![image](https://i.imgur.com/SrznmQm.png)
