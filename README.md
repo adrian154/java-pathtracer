@@ -1,3 +1,5 @@
+# This project has been rewritten with much better code. Go check out [JavaPathtracer](https://github.com/adrian154/JavaPathtracer)
+
 # java-pathtracer
 A pathtracer written in Java.
 
